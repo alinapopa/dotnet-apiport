@@ -35,7 +35,8 @@ namespace ApiPort.CommandLine
                 { "-u", "showRetargettingIssues" },
                 { "-i", "ignoreAssemblyFile" },
                 { "-s", "suppressBreakingChange" },
-            };
+                { "-w", "overwrite" },
+			};
 
             var options = ApiPortConfiguration.Parse<Options>(args, mappings);
 
@@ -58,6 +59,7 @@ namespace ApiPort.CommandLine
             public List<string> SuppressBreakingChange { get; set; }
             public bool Help { get; set; }
             public string TargetMap { get; set; }
+            public bool Overwrite { get; set; }   //overwrite the output file
         }
 
         private class AnalyzeCommandLineOption : ConsoleDefaultApiPortOptions, ICommandLineOptions
@@ -87,6 +89,7 @@ namespace ApiPort.CommandLine
                 OutputFormats = options.ResultFormat;
                 TargetMapFile = options.TargetMap;
                 BreakingChangeSuppressions = options.SuppressBreakingChange;
+                OverwriteOutputFile = options.Overwrite;
 
                 UpdateRequestFlags(options);
                 UpdateInputAssemblies(options);

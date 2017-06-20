@@ -236,6 +236,7 @@ gives a summary of issues and possible steps forward.
   -f, --file VALUE             [Required] Path to assembly file or directory of
                                  assemblies.
   -o, --out VALUE              Output file name
+  -w, --overwrite              Overwrite output file if it already exists
   -d, --description VALUE      Description of the submission
   -t, --target VALUE           The target you want to check against.
   -r, --resultFormat VALUE     The report output format

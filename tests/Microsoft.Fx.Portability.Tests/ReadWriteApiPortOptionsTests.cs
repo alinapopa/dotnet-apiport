@@ -39,6 +39,8 @@ namespace Microsoft.Fx.Portability.Tests
 
             public string OutputFileName { get; } = GetRandomString();
 
+            public bool OverwriteOutputFile { get; } = false;
+
             public IEnumerable<string> OutputFormats { get; } = GenerateRandomList(5);
 
             public AnalyzeRequestFlags RequestFlags { get; } = AnalyzeRequestFlags.ShowBreakingChanges | AnalyzeRequestFlags.ShowNonPortableApis;

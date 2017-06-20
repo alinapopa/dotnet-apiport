@@ -38,7 +38,9 @@ namespace ApiPortVS
 
         public string OutputFileName { get; }
 
-        public IEnumerable<string> IgnoredAssemblyFiles { get; } = Enumerable.Empty<string>();
+        public bool OverwriteOutputFile { get; }
+
+		public IEnumerable<string> IgnoredAssemblyFiles { get; } = Enumerable.Empty<string>();
 
         public IEnumerable<string> BreakingChangeSuppressions { get; } = Enumerable.Empty<string>();
 

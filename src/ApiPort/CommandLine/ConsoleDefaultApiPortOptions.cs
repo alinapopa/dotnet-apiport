@@ -23,6 +23,7 @@ namespace ApiPort.CommandLine
             RequestFlags = AnalyzeRequestFlags.None;
             Targets = Enumerable.Empty<string>();
             TargetMapFile = string.Empty;
+            OverwriteOutputFile = false;
         }
 
         public override string ServiceEndpoint

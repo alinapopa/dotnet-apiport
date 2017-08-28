@@ -4,6 +4,7 @@
 using Microsoft.Fx.Portability.ObjectModel;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Runtime.Versioning;
 using System.Linq;
 
@@ -130,6 +131,12 @@ namespace Microsoft.Fx.Portability.TestData
         public IEnumerable<string> GetAncestors(string docId)
         {
             throw new NotImplementedException();
+        }
+
+        public bool FindPackage(string assemblyInfo, IEnumerable<FrameworkName> targets, out ImmutableDictionary<FrameworkName, IEnumerable<NuGetPackageId>> packages)
+        {
+            packages = null;
+            return false;
         }
     }
 }

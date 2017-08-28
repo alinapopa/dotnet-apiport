@@ -25,7 +25,7 @@ namespace Microsoft.Fx.Portability.Web.Analyze.Tests
         [Fact]
         public void FindUnreferencedAssemblies_AllNulls()
         {
-            var engine = new AnalysisEngine(null, null);
+            var engine = new AnalysisEngine(null, null, null);
 
             engine.FindUnreferencedAssemblies(null, null).ToList();
         }
@@ -35,7 +35,7 @@ namespace Microsoft.Fx.Portability.Web.Analyze.Tests
         {
             var catalog = Substitute.For<IApiCatalogLookup>();
             var recommendations = Substitute.For<IApiRecommendations>();
-            var engine = new AnalysisEngine(catalog, recommendations);
+            var engine = new AnalysisEngine(catalog, recommendations, null);
 
             var result = engine.FindUnreferencedAssemblies(s_unreferencedAssemblies, null).ToList();
 
@@ -47,7 +47,7 @@ namespace Microsoft.Fx.Portability.Web.Analyze.Tests
         {
             var catalog = Substitute.For<IApiCatalogLookup>();
             var recommendations = Substitute.For<IApiRecommendations>();
-            var engine = new AnalysisEngine(catalog, recommendations);
+            var engine = new AnalysisEngine(catalog, recommendations, null);
 
             var specifiedUserAssemblies = s_unreferencedAssemblies.Select(ua => new AssemblyInfo() { AssemblyIdentity = ua, FileVersion = "0.0.0.0" }).ToList();
             var unreferencedAssms = engine.FindUnreferencedAssemblies(s_unreferencedAssemblies, specifiedUserAssemblies).ToList();
@@ -63,7 +63,7 @@ namespace Microsoft.Fx.Portability.Web.Analyze.Tests
             catalog.IsFrameworkAssembly(GetAssemblyIdentityWithoutCultureAndVersion(s_unreferencedAssemblies[0])).Returns(true);
 
             var recommendations = Substitute.For<IApiRecommendations>();
-            var engine = new AnalysisEngine(catalog, recommendations);
+            var engine = new AnalysisEngine(catalog, recommendations, null);
 
             var specifiedUserAssemblies = new[] { new AssemblyInfo { FileVersion = "", AssemblyIdentity = "MyAssembly" } };
             var unreferencedAssms = engine.FindUnreferencedAssemblies(s_unreferencedAssemblies, specifiedUserAssemblies).ToList();
@@ -79,7 +79,7 @@ namespace Microsoft.Fx.Portability.Web.Analyze.Tests
             catalog.IsFrameworkAssembly(GetAssemblyIdentityWithoutCultureAndVersion(s_unreferencedAssemblies[0])).Returns(true);
 
             var recommendations = Substitute.For<IApiRecommendations>();
-            var engine = new AnalysisEngine(catalog, recommendations);
+            var engine = new AnalysisEngine(catalog, recommendations, null);
 
             var unreferencedAssms = engine.FindUnreferencedAssemblies(s_unreferencedAssemblies, Enumerable.Empty<AssemblyInfo>()).ToList();
 
@@ -94,7 +94,7 @@ namespace Microsoft.Fx.Portability.Web.Analyze.Tests
             catalog.IsFrameworkAssembly(GetAssemblyIdentityWithoutCultureAndVersion(s_unreferencedAssemblies[0])).Returns(true);
 
             var recommendations = Substitute.For<IApiRecommendations>();
-            var engine = new AnalysisEngine(catalog, recommendations);
+            var engine = new AnalysisEngine(catalog, recommendations, null);
 
             var specifiedUserAssemblies = new List<AssemblyInfo>() { new AssemblyInfo() { FileVersion = "", AssemblyIdentity = "MyAssembly" }, null };
             var unreferencedAssms = engine.FindUnreferencedAssemblies(s_unreferencedAssemblies, specifiedUserAssemblies).ToList();
@@ -110,7 +110,7 @@ namespace Microsoft.Fx.Portability.Web.Analyze.Tests
             catalog.IsFrameworkAssembly(GetAssemblyIdentityWithoutCultureAndVersion(s_unreferencedAssemblies[0])).Returns(true);
 
             var recommendations = Substitute.For<IApiRecommendations>();
-            var engine = new AnalysisEngine(catalog, recommendations);
+            var engine = new AnalysisEngine(catalog, recommendations, null);
 
             var specifiedUserAssemblies = new List<AssemblyInfo>() { new AssemblyInfo() { FileVersion = "", AssemblyIdentity = "MyAssembly" } };
             var listWithNulls = s_unreferencedAssemblies.Concat(new List<string>() { null }).ToList();
@@ -125,7 +125,7 @@ namespace Microsoft.Fx.Portability.Web.Analyze.Tests
         [Fact]
         public void FindMembersNotInTargets_AllNull()
         {
-            var engine = new AnalysisEngine(null, null);
+            var engine = new AnalysisEngine(null, null, null);
 
             engine.FindMembersNotInTargets(null, null, null);
         }
@@ -158,7 +158,7 @@ namespace Microsoft.Fx.Portability.Web.Analyze.Tests
             catalog.IsFrameworkMember(mi2.MemberDocId).Returns(true);
 
             var recommendations = Substitute.For<IApiRecommendations>();
-            var engine = new AnalysisEngine(catalog, recommendations);
+            var engine = new AnalysisEngine(catalog, recommendations, null);
             var notInTarget = engine.FindMembersNotInTargets(targets, Array.Empty<string>(), testData);
 
             Assert.Equal(2, notInTarget.Count);
@@ -193,7 +193,7 @@ namespace Microsoft.Fx.Portability.Web.Analyze.Tests
             catalog.IsFrameworkMember(mi2.MemberDocId).Returns(true);
 
             var recommendations = Substitute.For<IApiRecommendations>();
-            var engine = new AnalysisEngine(catalog, recommendations);
+            var engine = new AnalysisEngine(catalog, recommendations, null);
             var notInTarget = engine.FindMembersNotInTargets(targets, new[] { mi1.DefinedInAssemblyIdentity }, testData);
 
             Assert.Equal(1, notInTarget.Count);
@@ -210,7 +210,7 @@ namespace Microsoft.Fx.Portability.Web.Analyze.Tests
             GenerateTestData(catalog);
 
             var recommendations = Substitute.For<IApiRecommendations>();
-            var engine = new AnalysisEngine(catalog, recommendations);
+            var engine = new AnalysisEngine(catalog, recommendations, null);
             var notInTarget = engine.FindMembersNotInTargets(targets, Array.Empty<string>(), testData);
 
             Assert.Equal(0, notInTarget.Count);
@@ -262,7 +262,7 @@ namespace Microsoft.Fx.Portability.Web.Analyze.Tests
             var catalog = Substitute.For<IApiCatalogLookup>();
             var recommendations = GenerateTestRecommendationsWithFixedEntry();
             var testData = GenerateTestData(catalog);
-            var engine = new AnalysisEngine(catalog, recommendations);
+            var engine = new AnalysisEngine(catalog, recommendations, null);
 
             var framework = new FrameworkName(".NET Core Framework,Version=4.5.1");
 
@@ -295,7 +295,7 @@ namespace Microsoft.Fx.Portability.Web.Analyze.Tests
             var catalog = Substitute.For<IApiCatalogLookup>();
             var recommendations = GenerateTestRecommendationsWithFixedEntry();
             var testData = GenerateTestData(catalog);
-            var engine = new AnalysisEngine(catalog, recommendations);
+            var engine = new AnalysisEngine(catalog, recommendations, null);
 
             var framework = new FrameworkName(".NET Framework, Version = v4.5.1");
             var framework2 = new FrameworkName(".NET Framework, Version = v4.5.2");
@@ -340,7 +340,7 @@ namespace Microsoft.Fx.Portability.Web.Analyze.Tests
             var catalog = Substitute.For<IApiCatalogLookup>();
             var recommendations = GenerateTestRecommendationsForShowRetargetting(2, 3);
             var testData = GenerateTestData(catalog);
-            var engine = new AnalysisEngine(catalog, recommendations);
+            var engine = new AnalysisEngine(catalog, recommendations, null);
 
             var framework = new FrameworkName(".NET Framework, Version = v4.5");
 
@@ -369,7 +369,7 @@ namespace Microsoft.Fx.Portability.Web.Analyze.Tests
             var catalog = Substitute.For<IApiCatalogLookup>();
             var recommendations = GenerateTestRecommendationsForShowRetargetting(2, 3);
             var testData = GenerateTestData(catalog);
-            var engine = new AnalysisEngine(catalog, recommendations);
+            var engine = new AnalysisEngine(catalog, recommendations, null);
 
             var framework = new FrameworkName(".NET Framework, Version = v4.5");
 
@@ -421,7 +421,7 @@ namespace Microsoft.Fx.Portability.Web.Analyze.Tests
         {
             var catalog = Substitute.For<IApiCatalogLookup>();
             var testData = GenerateTestData(catalog);
-            var engine = new AnalysisEngine(catalog, recommendations);
+            var engine = new AnalysisEngine(catalog, recommendations, null);
 
             // Value from AnalysisEngine.FullFrameworkIdentifier
             var framework = new FrameworkName(".NET Framework" + ",Version=" + version);

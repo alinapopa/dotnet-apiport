@@ -58,6 +58,9 @@ namespace Microsoft.Fx.Portability.Analyzer
                 ? _analysisEngine.FindBreakingChanges(targets, request.Dependencies, breakingChangeSkippedAssemblies, request.BreakingChangesToSuppress, userAssemblies, request.RequestFlags.HasFlag(AnalyzeRequestFlags.ShowRetargettingIssues)).ToList()
                 : new List<BreakingChangeDependency>();
 
+            var assembliesToGetNugetInfo = missingUserAssemblies.Union(userAssemblies);
+
+            var nugetPackages = _analysisEngine.GetNuGetPackagesInfo(assembliesToGetNugetInfo, targets);
             var reportingResult = _reportGenerator.ComputeReport(
                 targets,
                 submissionId,
@@ -66,7 +69,8 @@ namespace Microsoft.Fx.Portability.Analyzer
                 notInAnyTarget,
                 request.UnresolvedAssembliesDictionary,
                 missingUserAssemblies,
-                request.AssembliesWithErrors);
+                request.AssembliesWithErrors,
+                nugetPackages);
 
             return new AnalyzeResponse
             {
@@ -78,7 +82,8 @@ namespace Microsoft.Fx.Portability.Analyzer
                 ReportingResult = reportingResult,
                 SubmissionId = submissionId,
                 BreakingChanges = breakingChanges,
-                BreakingChangeSkippedAssemblies = breakingChangeSkippedAssemblies
+                BreakingChangeSkippedAssemblies = breakingChangeSkippedAssemblies,
+                NuGetPackages = nugetPackages
             };
         }
     }

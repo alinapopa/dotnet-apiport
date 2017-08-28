@@ -33,5 +33,7 @@ namespace Microsoft.Fx.Portability
             IEnumerable<string> breakingChangesToSuppress,
             ICollection<string> userAssemblies,
             bool ShowRetargettingIssues = false);
+
+        IList<NuGetPackageInfo> GetNuGetPackagesInfo(IEnumerable<string> assemblies, IEnumerable<FrameworkName> targets);
     }
 }

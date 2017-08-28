@@ -4,6 +4,7 @@
 using Microsoft.Fx.Portability.ObjectModel;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Versioning;
@@ -16,13 +17,15 @@ namespace Microsoft.Fx.Portability.Analysis
 
         private readonly IApiCatalogLookup _catalog;
         private readonly IApiRecommendations _recommendations;
+        private readonly IPackageFinder _packageFinder;
 
         public DateTimeOffset CatalogLastUpdated { get { return _catalog.LastModified; } }
 
-        public AnalysisEngine(IApiCatalogLookup catalog, IApiRecommendations recommendations)
+        public AnalysisEngine(IApiCatalogLookup catalog, IApiRecommendations recommendations, IPackageFinder packageFinder)
         {
             _catalog = catalog;
             _recommendations = recommendations;
+            _packageFinder = packageFinder;
         }
 
         public IEnumerable<AssemblyInfo> FindBreakingChangeSkippedAssemblies(IEnumerable<FrameworkName> targets, IEnumerable<AssemblyInfo> userAssemblies, IEnumerable<IgnoreAssemblyInfo> assembliesToIgnore)
@@ -219,6 +222,28 @@ namespace Microsoft.Fx.Portability.Analysis
 
                 yield return userAsm;
             }
+        }
+
+        public IList<NuGetPackageInfo> GetNuGetPackagesInfo(IEnumerable<string> assemblies, IEnumerable<FrameworkName> targets)
+        {
+            var nugetPackages = new List<NuGetPackageInfo>();
+            foreach(var assembly in assemblies)
+            {
+                ImmutableDictionary<FrameworkName, IEnumerable<NuGetPackageId>> packages = null;
+                var result = _packageFinder.FindPackage(assembly, targets, out packages);
+                if(result)
+                {
+                    foreach(var target in targets)
+                    {
+                        var nuGetPackageInfo = new NuGetPackageInfo();
+                        nuGetPackageInfo.AssemblyInfo = assembly;
+                        nuGetPackageInfo.Target = target;
+                        nuGetPackageInfo.SupportedPackages = packages[target].ToList();
+                        nugetPackages.Add(nuGetPackageInfo);
+                    }
+                }
+            }
+            return nugetPackages;
         }
 
         private static string GetAssemblyIdentityWithoutCultureAndVersion(string assemblyIdentity)

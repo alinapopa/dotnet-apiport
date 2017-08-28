@@ -29,7 +29,8 @@ namespace Microsoft.Fx.Portability.Analyzer
             {
                 AssemblyIdentity = metadataReader.FormatAssemblyInfo().ToString(),
                 FileVersion = file.Version ?? string.Empty,
-                TargetFrameworkMoniker = metadataReader.GetTargetFrameworkMoniker() ?? string.Empty
+                TargetFrameworkMoniker = metadataReader.GetTargetFrameworkMoniker() ?? string.Empty,
+                SkipBinaryIfPackageExists = file.SkipBinaryIfPackageExists
             };
 
             // Get assembly info

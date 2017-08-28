@@ -3,14 +3,22 @@
 
 using System.Collections.Generic;
 using System.Runtime.Versioning;
+using System.Linq;
 
 namespace Microsoft.Fx.Portability.ObjectModel
 {
     public class NuGetPackageInfo
     {
-        public string AssemblyInfo { get; set; }
-        public FrameworkName Target { get; set; }
-        public IList<NuGetPackageId> SupportedPackages { get; set; }
+        public string AssemblyInfo { get; private set; }
+        public FrameworkName Target { get; private set; }
+        public IList<NuGetPackageId> SupportedPackages { get; private set; }
+
+        public NuGetPackageInfo( string assemblyInfo, FrameworkName target, IEnumerable<NuGetPackageId> supportedPackages)
+        {
+            AssemblyInfo = assemblyInfo;
+            Target = target;
+            SupportedPackages = supportedPackages != null? supportedPackages.ToList(): new List<NuGetPackageId>();
+        }
     }
 
     public class NuGetPackageId

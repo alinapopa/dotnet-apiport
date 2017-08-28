@@ -67,6 +67,8 @@ namespace Microsoft.Fx.Portability.Tests
                 public string Version { get; } = string.Empty;
 
                 public Stream OpenRead() => File.OpenRead(Name);
+
+                public bool SkipBinaryIfPackageExists { get { return false; } }
             }
         }
     }

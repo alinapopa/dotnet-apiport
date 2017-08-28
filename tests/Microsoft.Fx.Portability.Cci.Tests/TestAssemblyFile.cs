@@ -29,6 +29,8 @@ namespace Microsoft.Fx.Portability.Cci.Tests
 
         public string Name { get { return FileInfo.FullName; } }
 
+        public bool SkipBinaryIfPackageExists { get { return false; } }
+
         public string Version
         {
             get { return "1.0.0.0"; }

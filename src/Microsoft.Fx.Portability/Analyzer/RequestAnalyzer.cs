@@ -32,16 +32,22 @@ namespace Microsoft.Fx.Portability.Analyzer
                 .OrderBy(x => x.FullName, StringComparer.OrdinalIgnoreCase)
                 .ToList();
 
+            List<NuGetPackageInfo> nugetPackagesForUserAssemblies = new List<NuGetPackageInfo>();
+            var assembliesToRemove = _analysisEngine.ComputeAssembliesToRemove(request.UserAssemblies, targets, out nugetPackagesForUserAssemblies);
+
             // TODO: It's possible that an AssemblyInfo in UserAssemblies is null.
             // This appears to be coming from analysis in the VSIX, possibly
             // from CCI.  Figure out where this is coming from.
-            var assemblyIdentities = request?.UserAssemblies.Where(x => x != null && x.AssemblyIdentity != null).Select(a => a.AssemblyIdentity)
+            var assemblyIdentities = request?.UserAssemblies.Where(x => x != null && x.AssemblyIdentity != null && !assembliesToRemove.Contains(x)).Select(a => a.AssemblyIdentity)
                 ?? Enumerable.Empty<string>();
 
             var userAssemblies = new HashSet<string>(assemblyIdentities, StringComparer.OrdinalIgnoreCase);
 
+            //remove the entries for which nuget packages exist
+            var dependencies = _analysisEngine.FilterDependencies(request.Dependencies, assembliesToRemove);
+
             var notInAnyTarget = request.RequestFlags.HasFlag(AnalyzeRequestFlags.ShowNonPortableApis)
-                ? _analysisEngine.FindMembersNotInTargets(targets, userAssemblies, request.Dependencies)
+                ? _analysisEngine.FindMembersNotInTargets(targets, userAssemblies, dependencies)
                 : new List<MemberInfo>();
 
             var unresolvedAssemblies = request.UnresolvedAssembliesDictionary != null
@@ -58,14 +64,13 @@ namespace Microsoft.Fx.Portability.Analyzer
                 ? _analysisEngine.FindBreakingChanges(targets, request.Dependencies, breakingChangeSkippedAssemblies, request.BreakingChangesToSuppress, userAssemblies, request.RequestFlags.HasFlag(AnalyzeRequestFlags.ShowRetargettingIssues)).ToList()
                 : new List<BreakingChangeDependency>();
 
-            var assembliesToGetNugetInfo = missingUserAssemblies.Union(userAssemblies);
-
-            var nugetPackages = _analysisEngine.GetNuGetPackagesInfo(assembliesToGetNugetInfo, targets);
+            var nugetPackagesForMissingAssemblies = _analysisEngine.GetNuGetPackagesInfo(missingUserAssemblies, targets);
+            var nugetPackages = nugetPackagesForMissingAssemblies.Union(nugetPackagesForUserAssemblies).ToList();
             var reportingResult = _reportGenerator.ComputeReport(
                 targets,
                 submissionId,
                 request.RequestFlags,
-                request.Dependencies,
+                dependencies,
                 notInAnyTarget,
                 request.UnresolvedAssembliesDictionary,
                 missingUserAssemblies,

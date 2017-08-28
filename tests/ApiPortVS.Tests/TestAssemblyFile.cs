@@ -38,5 +38,7 @@ namespace ApiPortVS.Tests
         {
             return Exists ? FileInfo.OpenRead() : null;
         }
+
+        public bool SkipBinaryIfPackageExists { get { return false; } }
     }
 }

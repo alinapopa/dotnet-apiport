@@ -160,13 +160,14 @@ namespace ApiPort.CommandLine
             /// This will search the input given and find all paths 
             /// </summary> 
             /// <param name="path">A file and directory path</param> 
-            private void UpdateInputAssemblies(string path)
+            private void UpdateInputAssemblies(string path, bool skipBinaryIfPackageExists = false)
             {
                 if (Directory.Exists(path))
                 {
                     foreach (var file in Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories))
                     {
-                        UpdateInputAssemblies(file);
+                        //If the user passes in a whole directory, set a flag to skip the analysis of that binary if a NuGet package already exists
+                        UpdateInputAssemblies(file, true);
                     }
                 }
                 else if (File.Exists(path))
@@ -175,7 +176,7 @@ namespace ApiPort.CommandLine
                     // assemblies to analyze since others are not valid assemblies 
                     if (HasValidPEExtension(path))
                     {
-                        _inputAssemblies.Add(new FilePathAssemblyFile(path));
+                        _inputAssemblies.Add(new FilePathAssemblyFile(path, skipBinaryIfPackageExists));
                     }
                 }
                 else
@@ -206,15 +207,19 @@ namespace ApiPort.CommandLine
             private class FilePathAssemblyFile : IAssemblyFile
             {
                 private readonly string _path;
+                private readonly bool _skipBinaryIfPackageExists;
 
-                public FilePathAssemblyFile(string path)
+                public FilePathAssemblyFile(string path, bool skipBinaryIfPackageExists = false)
                 {
                     _path = path;
+                    _skipBinaryIfPackageExists = skipBinaryIfPackageExists;
                 }
 
                 public string Name => _path;
 
                 public bool Exists => File.Exists(_path);
+
+                public bool SkipBinaryIfPackageExists => _skipBinaryIfPackageExists;
 
                 public string Version
                 {

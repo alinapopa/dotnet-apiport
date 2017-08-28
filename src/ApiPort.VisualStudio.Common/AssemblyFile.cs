@@ -12,15 +12,19 @@ namespace ApiPortVS
     internal class AssemblyFile : IAssemblyFile
     {
         private readonly string _path;
+        private readonly bool _skipBinaryIfPackageExists;
 
-        public AssemblyFile(string path)
+        public AssemblyFile(string path, bool skipBinaryIfPackageExists = false)
         {
             _path = path;
+            _skipBinaryIfPackageExists = skipBinaryIfPackageExists;
         }
 
         public string Name => _path;
 
         public bool Exists => File.Exists(_path);
+
+        public bool SkipBinaryIfPackageExists => _skipBinaryIfPackageExists;
 
         public string Version
         {

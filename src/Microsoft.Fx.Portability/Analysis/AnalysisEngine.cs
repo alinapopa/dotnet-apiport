@@ -227,23 +227,69 @@ namespace Microsoft.Fx.Portability.Analysis
         public IList<NuGetPackageInfo> GetNuGetPackagesInfo(IEnumerable<string> assemblies, IEnumerable<FrameworkName> targets)
         {
             var nugetPackages = new List<NuGetPackageInfo>();
-            foreach(var assembly in assemblies)
+            foreach (var assembly in assemblies)
             {
                 ImmutableDictionary<FrameworkName, IEnumerable<NuGetPackageId>> packages = null;
                 var result = _packageFinder.FindPackage(assembly, targets, out packages);
-                if(result)
+                if (result)
                 {
-                    foreach(var target in targets)
+                    foreach (var target in targets)
                     {
-                        var nuGetPackageInfo = new NuGetPackageInfo();
-                        nuGetPackageInfo.AssemblyInfo = assembly;
-                        nuGetPackageInfo.Target = target;
-                        nuGetPackageInfo.SupportedPackages = packages[target].ToList();
+                        var nuGetPackageInfo = new NuGetPackageInfo(assembly, target, packages.ContainsKey(target) ? packages[target].ToList() : new List<NuGetPackageId>());
                         nugetPackages.Add(nuGetPackageInfo);
                     }
                 }
             }
             return nugetPackages;
+        }
+
+        // Get assemblies that should be removed (nuget packages exist for all targets)
+        public List<AssemblyInfo> ComputeAssembliesToRemove(IEnumerable<AssemblyInfo> userAssemblies, IEnumerable<FrameworkName> targets, out List<NuGetPackageInfo> nugetPackagesForUserAssemblies)
+        {
+            var assembliesToRemove = new List<AssemblyInfo>();
+            nugetPackagesForUserAssemblies = new List<NuGetPackageInfo>();
+            foreach (var assembly in userAssemblies)
+            {
+                if (assembly != null)
+                {
+                    ImmutableDictionary<FrameworkName, IEnumerable<NuGetPackageId>> packages = null;
+                    var result = _packageFinder.FindPackage(assembly.AssemblyIdentity, targets, out packages);
+                    if (result)
+                    {
+                        bool supportedOnAllTargets = true;
+                        foreach (var target in targets)
+                        {
+                            var nuGetPackageInfo = new NuGetPackageInfo(assembly.AssemblyIdentity, target, packages.ContainsKey(target) ? packages[target].ToList() : new List<NuGetPackageId>());
+                            if (!nuGetPackageInfo.SupportedPackages.Any())
+                            {
+                                supportedOnAllTargets = false;
+                            }
+                            nugetPackagesForUserAssemblies.Add(nuGetPackageInfo);
+                        }
+
+                        if (assembly.SkipBinaryIfPackageExists && supportedOnAllTargets)
+                        {
+                            assembliesToRemove.Add(assembly);
+                        }
+                    }
+                }
+            }
+
+            return assembliesToRemove;
+        }
+
+        public IDictionary<MemberInfo, ICollection<AssemblyInfo>> FilterDependencies(IDictionary<MemberInfo, ICollection<AssemblyInfo>> dependencies, IEnumerable<AssemblyInfo> assembliesToRemove)
+        {
+            foreach (var dependency in dependencies)
+            {
+                var assemblies = dependency.Value;
+                foreach (var assemblyToRemove in assembliesToRemove)
+                {
+                    assemblies.Remove(assemblyToRemove);
+                }
+            }
+
+            return dependencies.Where(e => e.Value.Any()).ToDictionary(e => e.Key, e => e.Value);
         }
 
         private static string GetAssemblyIdentityWithoutCultureAndVersion(string assemblyIdentity)

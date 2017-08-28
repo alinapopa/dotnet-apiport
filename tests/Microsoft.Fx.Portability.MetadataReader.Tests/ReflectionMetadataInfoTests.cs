@@ -76,6 +76,8 @@ namespace Microsoft.Fx.Portability.MetadataReader.Tests
             public string Version => FileVersionInfo.GetVersionInfo(_path).FileVersion;
 
             public Stream OpenRead() => File.OpenRead(_path);
+
+            public bool SkipBinaryIfPackageExists { get { return false; } }
         }
     }
 }

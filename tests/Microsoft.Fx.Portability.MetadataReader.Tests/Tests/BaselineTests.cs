@@ -64,6 +64,8 @@ namespace Microsoft.Fx.Portability.MetadataReader.Tests
             public bool Exists => _file.Exists;
 
             public Stream OpenRead() => _file.OpenRead();
+
+            public bool SkipBinaryIfPackageExists { get { return false; } }
         }
 
     }

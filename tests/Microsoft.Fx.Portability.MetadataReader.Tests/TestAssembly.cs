@@ -49,6 +49,8 @@ namespace Microsoft.Fx.Portability.MetadataReader.Tests
 
             public string Version { get; }
 
+            public bool SkipBinaryIfPackageExists { get { return false; } }
+
             public Stream OpenRead() => new MemoryStream(_data);
 
             private static byte[] CreateRoslynAssemblyFile(string source, bool allowUnsafe)
@@ -101,6 +103,8 @@ namespace Microsoft.Fx.Portability.MetadataReader.Tests
             public string Version { get; }
 
             public Stream OpenRead() => s_assembly.GetManifestResourceStream(Name);
+
+            public bool SkipBinaryIfPackageExists { get { return false; } }
         }
     }
 }

@@ -32,16 +32,15 @@ namespace Microsoft.Fx.Portability.Analyzer
                 .OrderBy(x => x.FullName, StringComparer.OrdinalIgnoreCase)
                 .ToList();
 
-            List<NuGetPackageInfo> nugetPackagesForUserAssemblies = new List<NuGetPackageInfo>();
-            var assembliesToRemove = _analysisEngine.ComputeAssembliesToRemove(request.UserAssemblies, targets, out nugetPackagesForUserAssemblies);
-
             // TODO: It's possible that an AssemblyInfo in UserAssemblies is null.
             // This appears to be coming from analysis in the VSIX, possibly
             // from CCI.  Figure out where this is coming from.
-            var assemblyIdentities = request?.UserAssemblies.Where(x => x != null && x.AssemblyIdentity != null && !assembliesToRemove.Contains(x)).Select(a => a.AssemblyIdentity)
-                ?? Enumerable.Empty<string>();
+            var assemblyIdentities = request?.UserAssemblies.Where(x => x != null && x.AssemblyIdentity != null).Select(a => a.AssemblyIdentity)?? Enumerable.Empty<string>();
 
-            var userAssemblies = new HashSet<string>(assemblyIdentities, StringComparer.OrdinalIgnoreCase);
+            var nugetPackagesForUserAssemblies = _analysisEngine.GetNuGetPackagesInfo(assemblyIdentities, targets);
+            var assembliesToRemove = new HashSet<string>(_analysisEngine.ComputeAssembliesToRemove(request.UserAssemblies, targets, nugetPackagesForUserAssemblies), StringComparer.OrdinalIgnoreCase);
+
+            var userAssemblies = new HashSet<string>(assemblyIdentities.Where(a => !assembliesToRemove.Contains(a)), StringComparer.OrdinalIgnoreCase);
 
             //remove the entries for which nuget packages exist
             var dependencies = _analysisEngine.FilterDependencies(request.Dependencies, assembliesToRemove);

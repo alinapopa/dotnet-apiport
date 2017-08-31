@@ -11,8 +11,15 @@ namespace Microsoft.Fx.Portability.ObjectModel
     {
         /// <summary>
         /// Retrieves the list of possible NuGet packages that contain a given assembly.
-        /// Returns true if packages exist for that assembly (for any target), false if there are no packages
         /// </summary>
+        /// <param name="assemblyInfo">assembly identity</param>
+        /// <param name="targets">framework supporrted by package.</param>
+        /// <param name="packages">dictionary of framework/list of packages (packages found that support the given framework)</param>
+        /// <returns>
+        /// Returns true if packages exist for that assembly (for any target), false if there are no packages
+        /// If "true" is returned, but no packages in the list, it means the package is not supported on the given framework.
+        /// If false is returned, it means we don't have any info about that assembly.
+        /// </returns>
         bool TryFindPackage(string assemblyInfo, IEnumerable<FrameworkName> targets, out ImmutableDictionary<FrameworkName, IEnumerable<NuGetPackageId>> packages);
     }
 }

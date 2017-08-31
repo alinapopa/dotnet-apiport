@@ -132,11 +132,5 @@ namespace Microsoft.Fx.Portability.TestData
         {
             throw new NotImplementedException();
         }
-
-        public bool FindPackage(string assemblyInfo, IEnumerable<FrameworkName> targets, out ImmutableDictionary<FrameworkName, IEnumerable<NuGetPackageId>> packages)
-        {
-            packages = null;
-            return false;
-        }
     }
 }

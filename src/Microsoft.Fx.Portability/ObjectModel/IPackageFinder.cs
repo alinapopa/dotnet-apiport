@@ -13,6 +13,6 @@ namespace Microsoft.Fx.Portability.ObjectModel
         /// Retrieves the list of possible NuGet packages that contain a given assembly.
         /// Returns true if packages exist for that assembly (for any target), false if there are no packages
         /// </summary>
-        bool FindPackage(string assemblyInfo, IEnumerable<FrameworkName> targets, out ImmutableDictionary<FrameworkName, IEnumerable<NuGetPackageId>> packages);
+        bool TryFindPackage(string assemblyInfo, IEnumerable<FrameworkName> targets, out ImmutableDictionary<FrameworkName, IEnumerable<NuGetPackageId>> packages);
     }
 }

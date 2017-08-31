@@ -229,7 +229,7 @@ namespace Microsoft.Fx.Portability.Analysis
             var nugetPackages = new List<NuGetPackageInfo>();
             foreach (var assembly in assemblies)
             {
-                if (_packageFinder.FindPackage(assembly, targets, out var packages))
+                if (_packageFinder.TryFindPackage(assembly, targets, out var packages))
                 {
                     foreach (var target in targets)
                     {

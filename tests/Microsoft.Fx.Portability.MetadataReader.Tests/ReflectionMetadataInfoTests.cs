@@ -80,7 +80,7 @@ namespace Microsoft.Fx.Portability.MetadataReader.Tests
 
             public Stream OpenRead() => File.OpenRead(_path);
 
-            public bool SkipBinaryIfPackageExists { get { return false; } }
+            public bool SkipBinaryIfPackageExists => false;
         }
     }
 }

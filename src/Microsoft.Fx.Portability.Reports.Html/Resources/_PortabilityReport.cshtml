@@ -227,13 +227,13 @@
                     <th>@header</th>
                 }
             </tr>
-            @foreach (var nugetpackage in Model.NuGetPackages)
+            @foreach (var nugetPackage in Model.NuGetPackages)
             {
-                foreach (var package in nugetpackage.SupportedPackages)
+                foreach (var package in nugetPackage.SupportedPackages)
                 {
                     <tr>
-                        <td>@nugetpackage.AssemblyInfo</td>
-                        <td>@nugetpackage.Target.FullName</td>
+                        <td>@nugetPackage.AssemblyInfo</td>
+                        <td>@nugetPackage.Target.FullName</td>
                         @if(!string.IsNullOrEmpty(package.Hyperlink))
                         {
                             <td><a href="@package.Hyperlink">@package.PackageId</a></td>

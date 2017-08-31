@@ -49,7 +49,7 @@ namespace Microsoft.Fx.Portability.MetadataReader.Tests
 
             public string Version { get; }
 
-            public bool SkipBinaryIfPackageExists { get { return false; } }
+            public bool SkipBinaryIfPackageExists => false;
 
             public Stream OpenRead() => new MemoryStream(_data);
 

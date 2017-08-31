@@ -15,7 +15,5 @@ namespace Microsoft.Fx.Portability
         string Version { get; }
 
         bool Exists { get; }
-
-        bool SkipBinaryIfPackageExists { get; }
     }
 }

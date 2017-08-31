@@ -7,6 +7,7 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Reflection.PortableExecutable;
@@ -15,7 +16,7 @@ namespace Microsoft.Fx.Portability.Analyzer
 {
     internal class ReflectionMetadataDependencyInfo : IDependencyInfo
     {
-        private readonly IEnumerable<IAssemblyFile> _inputAssemblies;
+        private readonly ImmutableDictionary<IAssemblyFile, bool> _inputAssemblies;
         private readonly IDependencyFilter _assemblyFilter;
 
         private readonly ConcurrentDictionary<string, ICollection<string>> _unresolvedAssemblies = new ConcurrentDictionary<string, ICollection<string>>(StringComparer.Ordinal);
@@ -23,13 +24,13 @@ namespace Microsoft.Fx.Portability.Analyzer
         private readonly ICollection<AssemblyInfo> _userAssemblies = new ConcurrentHashSet<AssemblyInfo>();
         private readonly ConcurrentDictionary<MemberInfo, ICollection<AssemblyInfo>> _cachedDependencies = new ConcurrentDictionary<MemberInfo, ICollection<AssemblyInfo>>();
 
-        private ReflectionMetadataDependencyInfo(IEnumerable<IAssemblyFile> inputAssemblies, IDependencyFilter assemblyFilter)
+        private ReflectionMetadataDependencyInfo(ImmutableDictionary<IAssemblyFile, bool> inputAssemblies, IDependencyFilter assemblyFilter)
         {
             _inputAssemblies = inputAssemblies;
             _assemblyFilter = assemblyFilter;
         }
 
-        public static ReflectionMetadataDependencyInfo ComputeDependencies(IEnumerable<IAssemblyFile> inputAssemblies, IDependencyFilter assemblyFilter, IProgressReporter progressReport)
+        public static ReflectionMetadataDependencyInfo ComputeDependencies(ImmutableDictionary<IAssemblyFile, bool> inputAssemblies, IDependencyFilter assemblyFilter, IProgressReporter progressReport)
         {
             var engine = new ReflectionMetadataDependencyInfo(inputAssemblies, assemblyFilter);
 
@@ -64,7 +65,7 @@ namespace Microsoft.Fx.Portability.Analyzer
             {
                 try
                 {
-                    foreach (var dependencies in GetDependencies(file))
+                    foreach (var dependencies in GetDependencies(file.Key, file.Value))
                     {
                         var m = new MemberInfo
                         {
@@ -94,12 +95,12 @@ namespace Microsoft.Fx.Portability.Analyzer
                 catch (InvalidPEAssemblyException)
                 {
                     // This often indicates a non-PE file
-                    _assembliesWithError.Add(file.Name);
+                    _assembliesWithError.Add(file.Key.Name);
                 }
                 catch (BadImageFormatException)
                 {
                     // This often indicates a PE file with invalid contents (either because the assembly is protected or corrupted)
-                    _assembliesWithError.Add(file.Name);
+                    _assembliesWithError.Add(file.Key.Name);
                 }
             });
 
@@ -111,7 +112,7 @@ namespace Microsoft.Fx.Portability.Analyzer
             }
         }
 
-        private IEnumerable<MemberDependency> GetDependencies(IAssemblyFile file)
+        private IEnumerable<MemberDependency> GetDependencies(IAssemblyFile file, bool skipAssemblyIfPackageFound)
         {
             try
             {
@@ -122,7 +123,7 @@ namespace Microsoft.Fx.Portability.Analyzer
 
                     AddReferencedAssemblies(metadataReader);
 
-                    var helper = new DependencyFinderEngineHelper(_assemblyFilter, metadataReader, file);
+                    var helper = new DependencyFinderEngineHelper(_assemblyFilter, metadataReader, file, skipAssemblyIfPackageFound);
                     helper.ComputeData();
 
                     // Remember this assembly as a user assembly.

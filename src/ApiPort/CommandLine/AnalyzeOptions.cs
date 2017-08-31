@@ -6,6 +6,7 @@ using Microsoft.Fx.Portability;
 using Microsoft.Fx.Portability.ObjectModel;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -71,7 +72,7 @@ namespace ApiPort.CommandLine
                 ".ildll"
             };
 
-            private readonly ICollection<IAssemblyFile> _inputAssemblies = new SortedSet<IAssemblyFile>(new AssemblyFileComparer());
+            private readonly IDictionary<IAssemblyFile, bool> _inputAssemblies = new SortedDictionary<IAssemblyFile, bool>(new AssemblyFileComparer());
 
             // Case insensitive so that if this is run on a case-sensitive file system, we don't override anything 
             private readonly ICollection<string> _invalidInputFiles = new SortedSet<string>(StringComparer.Ordinal);
@@ -98,11 +99,11 @@ namespace ApiPort.CommandLine
                 UpdateInputAssemblies(options);
             }
 
-            public override IEnumerable<IAssemblyFile> InputAssemblies
+            public override ImmutableDictionary<IAssemblyFile, bool> InputAssemblies
             {
                 get
                 {
-                    return _inputAssemblies;
+                    return _inputAssemblies.ToImmutableDictionary();
                 }
 
                 set
@@ -176,7 +177,19 @@ namespace ApiPort.CommandLine
                     // assemblies to analyze since others are not valid assemblies 
                     if (HasValidPEExtension(path))
                     {
-                        _inputAssemblies.Add(new FilePathAssemblyFile(path, skipBinaryIfPackageExists));
+                        var filePath = new FilePathAssemblyFile(path);
+                        if (_inputAssemblies.ContainsKey(filePath))
+                        {
+                            //if duplicate file paths with different skip flags, set skip flag to false
+                            if (_inputAssemblies[filePath] && !skipBinaryIfPackageExists)
+                            {
+                                _inputAssemblies[filePath] = false;
+                            }
+                        }
+                        else
+                        {
+                            _inputAssemblies.Add(filePath, skipBinaryIfPackageExists);
+                        }
                     }
                 }
                 else
@@ -207,19 +220,15 @@ namespace ApiPort.CommandLine
             private class FilePathAssemblyFile : IAssemblyFile
             {
                 private readonly string _path;
-                private readonly bool _skipBinaryIfPackageExists;
 
-                public FilePathAssemblyFile(string path, bool skipBinaryIfPackageExists = false)
+                public FilePathAssemblyFile(string path)
                 {
                     _path = path;
-                    _skipBinaryIfPackageExists = skipBinaryIfPackageExists;
                 }
 
                 public string Name => _path;
 
                 public bool Exists => File.Exists(_path);
-
-                public bool SkipBinaryIfPackageExists => _skipBinaryIfPackageExists;
 
                 public string Version
                 {

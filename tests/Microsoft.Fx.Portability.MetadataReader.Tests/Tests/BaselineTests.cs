@@ -4,6 +4,7 @@
 using Microsoft.Fx.Portability.Analyzer;
 using NSubstitute;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -26,7 +27,8 @@ namespace Microsoft.Fx.Portability.MetadataReader.Tests
             var assemblyFile = Substitute.For<IAssemblyFile>();
             var progressReporter = Substitute.For<IProgressReporter>();
 
-            var dependencies = dependencyFinder.FindDependencies(new[] { path }, progressReporter);
+            var files = new[] { new KeyValuePair<IAssemblyFile, bool>(path, false) };
+            var dependencies = dependencyFinder.FindDependencies(files.ToImmutableDictionary(), progressReporter);
 
             var result = dependencies.Dependencies
                 .Select(d => d.Key)

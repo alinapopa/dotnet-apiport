@@ -14,10 +14,9 @@ namespace ApiPortVS
         private readonly string _path;
         private readonly bool _skipBinaryIfPackageExists;
 
-        public AssemblyFile(string path, bool skipBinaryIfPackageExists = false)
+        public AssemblyFile(string path)
         {
             _path = path;
-            _skipBinaryIfPackageExists = skipBinaryIfPackageExists;
         }
 
         public string Name => _path;

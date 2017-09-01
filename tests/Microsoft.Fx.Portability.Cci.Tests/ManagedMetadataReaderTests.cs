@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.Fx.Portability.Analyzer;
 using NSubstitute;
@@ -44,7 +45,7 @@ namespace Microsoft.Fx.Portability.Cci.Tests
 
         private static void CompareFinders(IDependencyFinder finder1, IDependencyFinder finder2, IEnumerable<string> paths)
         {
-            var fi = paths.Select(p => new TestAssemblyFile(p));
+            var fi = paths.Select(p => new KeyValuePair<IAssemblyFile, bool>(new TestAssemblyFile(p), false)).ToImmutableDictionary();
             var progressReporter = Substitute.For<IProgressReporter>();
             var dependencies1 = finder1.FindDependencies(fi, progressReporter);
             var dependencies2 = finder2.FindDependencies(fi, progressReporter);

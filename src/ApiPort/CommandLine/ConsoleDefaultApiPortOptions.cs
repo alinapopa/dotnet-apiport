@@ -4,6 +4,7 @@
 using Microsoft.Fx.Portability;
 using Microsoft.Fx.Portability.ObjectModel;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 
@@ -75,7 +76,7 @@ namespace ApiPort.CommandLine
             }
         }
 
-        public override IEnumerable<IAssemblyFile> InputAssemblies
+        public override ImmutableDictionary<IAssemblyFile, bool> InputAssemblies
         {
             get { return base.InputAssemblies; }
             set

@@ -5,6 +5,7 @@ using Microsoft.Fx.Portability;
 using Microsoft.Fx.Portability.Analyzer;
 using Microsoft.Fx.Portability.ObjectModel;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 
@@ -12,7 +13,7 @@ namespace ApiPort
 {
     internal class EmptyDependendencyFinder : IDependencyFinder
     {
-        public IDependencyInfo FindDependencies(IEnumerable<IAssemblyFile> inputAssemblyPaths, IProgressReporter progressReport)
+        public IDependencyInfo FindDependencies(ImmutableDictionary<IAssemblyFile, bool> inputAssemblyPaths, IProgressReporter progressReport)
         {
             return new EmptyDependencyInfo();
         }

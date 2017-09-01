@@ -105,13 +105,15 @@ namespace ApiPortVS.Analyze
             // TODO: Allow setting description
             string description = null;
 
+            //For Visual Studio version of the tool, set the flag to skip assemblies when NuGet packages are found to true
             return new AnalysisOptions(
                 description,
                 assemblyPaths,
                 targets,
                 formats,
                 !_optionsViewModel.SaveMetadata,
-                reportFileName);
+                reportFileName,
+                true);
         }
     }
 }

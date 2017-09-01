@@ -19,7 +19,7 @@ namespace Microsoft.Fx.Portability.Analyzer
         private readonly AssemblyReferenceInformation _currentAssemblyInfo;
         private readonly string _currentAssemblyName;
 
-        public DependencyFinderEngineHelper(IDependencyFilter assemblyFilter, MetadataReader metadataReader, IAssemblyFile file)
+        public DependencyFinderEngineHelper(IDependencyFilter assemblyFilter, MetadataReader metadataReader, IAssemblyFile file, bool skipAssemblyIfPackageFound)
         {
             _assemblyFilter = assemblyFilter;
             _reader = metadataReader;
@@ -30,7 +30,8 @@ namespace Microsoft.Fx.Portability.Analyzer
             {
                 AssemblyIdentity = metadataReader.FormatAssemblyInfo().ToString(),
                 FileVersion = file.Version ?? string.Empty,
-                TargetFrameworkMoniker = metadataReader.GetTargetFrameworkMoniker() ?? string.Empty
+                TargetFrameworkMoniker = metadataReader.GetTargetFrameworkMoniker() ?? string.Empty,
+                SkipBinaryIfPackageExists = skipAssemblyIfPackageFound
             };
 
             // Get assembly info

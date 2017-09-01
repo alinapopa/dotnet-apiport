@@ -46,6 +46,8 @@ namespace Microsoft.Fx.Portability.ObjectModel
             }
         }
 
+        public bool SkipBinaryIfPackageExists { get; set; }
+
         public override bool Equals(object obj)
         {
             AssemblyInfo other = obj as AssemblyInfo;

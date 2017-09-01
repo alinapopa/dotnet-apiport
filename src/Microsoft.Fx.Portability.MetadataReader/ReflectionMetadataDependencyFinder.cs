@@ -5,6 +5,8 @@ using Microsoft.Fx.Portability.Resources;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
 
 namespace Microsoft.Fx.Portability.Analyzer
@@ -18,10 +20,8 @@ namespace Microsoft.Fx.Portability.Analyzer
             _assemblyFilter = assemblyFilter ?? throw new ArgumentNullException(nameof(assemblyFilter));
         }
 
-        public IDependencyInfo FindDependencies(IEnumerable<IAssemblyFile> files, IProgressReporter _progressReporter)
+        public IDependencyInfo FindDependencies(ImmutableDictionary<IAssemblyFile, bool> files, IProgressReporter _progressReporter)
         {
-            var inputAssemblyPaths = files.Where(f => FilterValidFiles(f, _progressReporter)).ToList();
-
             using (var task = _progressReporter.StartTask(LocalizedStrings.DetectingAssemblyReferences))
             {
                 try
@@ -35,18 +35,6 @@ namespace Microsoft.Fx.Portability.Analyzer
                     throw;
                 }
             }
-        }
-
-        private static bool FilterValidFiles(IAssemblyFile file, IProgressReporter _progressReporter)
-        {
-            if (file.Exists)
-            {
-                return true;
-            }
-
-            _progressReporter.ReportIssue(string.Format(CultureInfo.CurrentCulture, LocalizedStrings.UnknownFile, file.Name));
-
-            return false;
         }
     }
 }

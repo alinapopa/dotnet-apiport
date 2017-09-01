@@ -346,7 +346,8 @@ namespace Microsoft.Fx.Portability
                         response.MissingDependencies,
                         dependencyInfo?.UnresolvedAssemblies,
                         response.UnresolvedUserAssemblies,
-                        dependencyInfo?.AssembliesWithErrors
+                        dependencyInfo?.AssembliesWithErrors,
+                        response.NuGetPackages
                     );
                 }
                 catch (Exception)

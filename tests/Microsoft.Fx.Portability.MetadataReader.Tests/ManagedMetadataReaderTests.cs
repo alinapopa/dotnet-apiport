@@ -6,6 +6,7 @@ using Microsoft.Fx.Portability.ObjectModel;
 using NSubstitute;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -80,7 +81,8 @@ namespace Microsoft.Fx.Portability.MetadataReader.Tests
             var assemblyToTest = TestAssembly.Create(source, allowUnsafe);
             var progressReporter = Substitute.For<IProgressReporter>();
 
-            var dependencies = dependencyFinder.FindDependencies(new[] { assemblyToTest }, progressReporter);
+            var files = new[] { new KeyValuePair<IAssemblyFile, bool>(assemblyToTest, false) };
+            var dependencies = dependencyFinder.FindDependencies(files.ToImmutableDictionary(), progressReporter);
 
             foreach (var dependency in dependencies.Dependencies)
             {
@@ -127,7 +129,8 @@ namespace Microsoft.Fx.Portability.MetadataReader.Tests
             var assemblyToTest = TestAssembly.Create("FilterApis.cs");
             var progressReporter = Substitute.For<IProgressReporter>();
 
-            var dependencies = dependencyFinder.FindDependencies(new[] { assemblyToTest }, progressReporter);
+            var files = new[] { new KeyValuePair<IAssemblyFile, bool>(assemblyToTest, false) };
+            var dependencies = dependencyFinder.FindDependencies(files.ToImmutableDictionary(), progressReporter);
             var foundDocIds = dependencies.Dependencies
                 .Select(m => m.Key.MemberDocId)
                 .OrderBy(o => o, StringComparer.Ordinal);
@@ -155,7 +158,8 @@ namespace Microsoft.Fx.Portability.MetadataReader.Tests
             var assemblyToTest = TestAssembly.Create("FilterApis.cs");
             var progressReporter = Substitute.For<IProgressReporter>();
 
-            var dependencies = dependencyFinder.FindDependencies(new[] { assemblyToTest }, progressReporter);
+            var files = new[] { new KeyValuePair<IAssemblyFile, bool>(assemblyToTest, false) };
+            var dependencies = dependencyFinder.FindDependencies(files.ToImmutableDictionary(), progressReporter);
             var foundDocIds = dependencies.Dependencies
                 .Select(m => m.Key.MemberDocId)
                 .OrderBy(o => o, StringComparer.Ordinal);
@@ -177,7 +181,8 @@ namespace Microsoft.Fx.Portability.MetadataReader.Tests
             var dependencyFinder = new ReflectionMetadataDependencyFinder(new AlwaysTrueDependencyFilter());
             var progressReporter = Substitute.For<IProgressReporter>();
 
-            var dependencies = dependencyFinder.FindDependencies(new[] { assemblyToTest }, progressReporter);
+            var files = new[] { new KeyValuePair<IAssemblyFile, bool>(assemblyToTest, false) };
+            var dependencies = dependencyFinder.FindDependencies(files.ToImmutableDictionary(), progressReporter);
 
             var foundDocIds = dependencies
                 .Dependencies
@@ -213,7 +218,8 @@ namespace Microsoft.Fx.Portability.MetadataReader.Tests
 
             var dependencyFinder = new ReflectionMetadataDependencyFinder(new DotNetFrameworkFilter());
             var progressReporter = Substitute.For<IProgressReporter>();
-            var dependencies = dependencyFinder.FindDependencies(new[] { assemblyToTest }, progressReporter);
+            var files = new[] { new KeyValuePair<IAssemblyFile, bool>(assemblyToTest, false) };
+            var dependencies = dependencyFinder.FindDependencies(files.ToImmutableDictionary(), progressReporter);
 
             var primitiveArray = dependencies.Dependencies.FirstOrDefault(o => string.Equals(o.Key.MemberDocId, arrayDocId)).Key;
             Assert.NotNull(primitiveArray);

@@ -6,6 +6,7 @@ using Microsoft.Fx.Portability.ObjectModel;
 using NSubstitute;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.Versioning;
 using Xunit;
@@ -25,7 +26,7 @@ namespace Microsoft.Fx.Portability.Web.Analyze.Tests
         [Fact]
         public void FindUnreferencedAssemblies_AllNulls()
         {
-            var engine = new AnalysisEngine(null, null);
+            var engine = new AnalysisEngine(null, null, null);
 
             engine.FindUnreferencedAssemblies(null, null).ToList();
         }
@@ -35,7 +36,7 @@ namespace Microsoft.Fx.Portability.Web.Analyze.Tests
         {
             var catalog = Substitute.For<IApiCatalogLookup>();
             var recommendations = Substitute.For<IApiRecommendations>();
-            var engine = new AnalysisEngine(catalog, recommendations);
+            var engine = new AnalysisEngine(catalog, recommendations, null);
 
             var result = engine.FindUnreferencedAssemblies(s_unreferencedAssemblies, null).ToList();
 
@@ -47,7 +48,7 @@ namespace Microsoft.Fx.Portability.Web.Analyze.Tests
         {
             var catalog = Substitute.For<IApiCatalogLookup>();
             var recommendations = Substitute.For<IApiRecommendations>();
-            var engine = new AnalysisEngine(catalog, recommendations);
+            var engine = new AnalysisEngine(catalog, recommendations, null);
 
             var specifiedUserAssemblies = s_unreferencedAssemblies.Select(ua => new AssemblyInfo() { AssemblyIdentity = ua, FileVersion = "0.0.0.0" }).ToList();
             var unreferencedAssms = engine.FindUnreferencedAssemblies(s_unreferencedAssemblies, specifiedUserAssemblies).ToList();
@@ -63,7 +64,7 @@ namespace Microsoft.Fx.Portability.Web.Analyze.Tests
             catalog.IsFrameworkAssembly(GetAssemblyIdentityWithoutCultureAndVersion(s_unreferencedAssemblies[0])).Returns(true);
 
             var recommendations = Substitute.For<IApiRecommendations>();
-            var engine = new AnalysisEngine(catalog, recommendations);
+            var engine = new AnalysisEngine(catalog, recommendations, null);
 
             var specifiedUserAssemblies = new[] { new AssemblyInfo { FileVersion = "", AssemblyIdentity = "MyAssembly" } };
             var unreferencedAssms = engine.FindUnreferencedAssemblies(s_unreferencedAssemblies, specifiedUserAssemblies).ToList();
@@ -79,7 +80,7 @@ namespace Microsoft.Fx.Portability.Web.Analyze.Tests
             catalog.IsFrameworkAssembly(GetAssemblyIdentityWithoutCultureAndVersion(s_unreferencedAssemblies[0])).Returns(true);
 
             var recommendations = Substitute.For<IApiRecommendations>();
-            var engine = new AnalysisEngine(catalog, recommendations);
+            var engine = new AnalysisEngine(catalog, recommendations, null);
 
             var unreferencedAssms = engine.FindUnreferencedAssemblies(s_unreferencedAssemblies, Enumerable.Empty<AssemblyInfo>()).ToList();
 
@@ -94,7 +95,7 @@ namespace Microsoft.Fx.Portability.Web.Analyze.Tests
             catalog.IsFrameworkAssembly(GetAssemblyIdentityWithoutCultureAndVersion(s_unreferencedAssemblies[0])).Returns(true);
 
             var recommendations = Substitute.For<IApiRecommendations>();
-            var engine = new AnalysisEngine(catalog, recommendations);
+            var engine = new AnalysisEngine(catalog, recommendations, null);
 
             var specifiedUserAssemblies = new List<AssemblyInfo>() { new AssemblyInfo() { FileVersion = "", AssemblyIdentity = "MyAssembly" }, null };
             var unreferencedAssms = engine.FindUnreferencedAssemblies(s_unreferencedAssemblies, specifiedUserAssemblies).ToList();
@@ -110,7 +111,7 @@ namespace Microsoft.Fx.Portability.Web.Analyze.Tests
             catalog.IsFrameworkAssembly(GetAssemblyIdentityWithoutCultureAndVersion(s_unreferencedAssemblies[0])).Returns(true);
 
             var recommendations = Substitute.For<IApiRecommendations>();
-            var engine = new AnalysisEngine(catalog, recommendations);
+            var engine = new AnalysisEngine(catalog, recommendations, null);
 
             var specifiedUserAssemblies = new List<AssemblyInfo>() { new AssemblyInfo() { FileVersion = "", AssemblyIdentity = "MyAssembly" } };
             var listWithNulls = s_unreferencedAssemblies.Concat(new List<string>() { null }).ToList();
@@ -125,7 +126,7 @@ namespace Microsoft.Fx.Portability.Web.Analyze.Tests
         [Fact]
         public void FindMembersNotInTargets_AllNull()
         {
-            var engine = new AnalysisEngine(null, null);
+            var engine = new AnalysisEngine(null, null, null);
 
             engine.FindMembersNotInTargets(null, null, null);
         }
@@ -158,7 +159,7 @@ namespace Microsoft.Fx.Portability.Web.Analyze.Tests
             catalog.IsFrameworkMember(mi2.MemberDocId).Returns(true);
 
             var recommendations = Substitute.For<IApiRecommendations>();
-            var engine = new AnalysisEngine(catalog, recommendations);
+            var engine = new AnalysisEngine(catalog, recommendations, null);
             var notInTarget = engine.FindMembersNotInTargets(targets, Array.Empty<string>(), testData);
 
             Assert.Equal(2, notInTarget.Count);
@@ -193,7 +194,7 @@ namespace Microsoft.Fx.Portability.Web.Analyze.Tests
             catalog.IsFrameworkMember(mi2.MemberDocId).Returns(true);
 
             var recommendations = Substitute.For<IApiRecommendations>();
-            var engine = new AnalysisEngine(catalog, recommendations);
+            var engine = new AnalysisEngine(catalog, recommendations, null);
             var notInTarget = engine.FindMembersNotInTargets(targets, new[] { mi1.DefinedInAssemblyIdentity }, testData);
 
             Assert.Equal(1, notInTarget.Count);
@@ -210,7 +211,7 @@ namespace Microsoft.Fx.Portability.Web.Analyze.Tests
             GenerateTestData(catalog);
 
             var recommendations = Substitute.For<IApiRecommendations>();
-            var engine = new AnalysisEngine(catalog, recommendations);
+            var engine = new AnalysisEngine(catalog, recommendations, null);
             var notInTarget = engine.FindMembersNotInTargets(targets, Array.Empty<string>(), testData);
 
             Assert.Equal(0, notInTarget.Count);
@@ -262,7 +263,7 @@ namespace Microsoft.Fx.Portability.Web.Analyze.Tests
             var catalog = Substitute.For<IApiCatalogLookup>();
             var recommendations = GenerateTestRecommendationsWithFixedEntry();
             var testData = GenerateTestData(catalog);
-            var engine = new AnalysisEngine(catalog, recommendations);
+            var engine = new AnalysisEngine(catalog, recommendations, null);
 
             var framework = new FrameworkName(".NET Core Framework,Version=4.5.1");
 
@@ -295,7 +296,7 @@ namespace Microsoft.Fx.Portability.Web.Analyze.Tests
             var catalog = Substitute.For<IApiCatalogLookup>();
             var recommendations = GenerateTestRecommendationsWithFixedEntry();
             var testData = GenerateTestData(catalog);
-            var engine = new AnalysisEngine(catalog, recommendations);
+            var engine = new AnalysisEngine(catalog, recommendations, null);
 
             var framework = new FrameworkName(".NET Framework, Version = v4.5.1");
             var framework2 = new FrameworkName(".NET Framework, Version = v4.5.2");
@@ -340,7 +341,7 @@ namespace Microsoft.Fx.Portability.Web.Analyze.Tests
             var catalog = Substitute.For<IApiCatalogLookup>();
             var recommendations = GenerateTestRecommendationsForShowRetargetting(2, 3);
             var testData = GenerateTestData(catalog);
-            var engine = new AnalysisEngine(catalog, recommendations);
+            var engine = new AnalysisEngine(catalog, recommendations, null);
 
             var framework = new FrameworkName(".NET Framework, Version = v4.5");
 
@@ -369,7 +370,7 @@ namespace Microsoft.Fx.Portability.Web.Analyze.Tests
             var catalog = Substitute.For<IApiCatalogLookup>();
             var recommendations = GenerateTestRecommendationsForShowRetargetting(2, 3);
             var testData = GenerateTestData(catalog);
-            var engine = new AnalysisEngine(catalog, recommendations);
+            var engine = new AnalysisEngine(catalog, recommendations, null);
 
             var framework = new FrameworkName(".NET Framework, Version = v4.5");
 
@@ -390,6 +391,139 @@ namespace Microsoft.Fx.Portability.Web.Analyze.Tests
                 Assert.Equal(expectedID.ToString(), bcd.Break.Id);
                 expectedID++;
             }
+        }
+
+        [Fact]
+        public void TestGetNugetPackageInfo()
+        {
+            var userAsm1 = new AssemblyInfo() { AssemblyIdentity = "userAsm1, Version=1.0.0.0", FileVersion = "1.0.0.0", SkipBinaryIfPackageExists = true };
+
+
+            var packageFinder = Substitute.For<IPackageFinder>();
+
+            var targets = new List<FrameworkName>() { new FrameworkName("Windows Phone, version=8.1") };
+            var packageIdAsm1 = new List<NuGetPackageId>() { new NuGetPackageId() };
+            var returnedpackages = ImmutableDictionary<FrameworkName, IEnumerable<NuGetPackageId>>.Empty.Add(targets[0], packageIdAsm1);
+
+
+            packageFinder.TryFindPackage(userAsm1.AssemblyIdentity, targets, out var packages).Returns(
+                x =>
+                {
+                    x[2] = returnedpackages;
+                    return true;
+                });
+
+            var engine = new AnalysisEngine(Substitute.For<IApiCatalogLookup>(), Substitute.For<IApiRecommendations>(), packageFinder);
+            var nugetPackageResult = engine.GetNuGetPackagesInfo(new[] { userAsm1.AssemblyIdentity }, targets);
+
+            Assert.NotNull(nugetPackageResult);
+            Assert.Equal(nugetPackageResult.First().AssemblyInfo, userAsm1.AssemblyIdentity);
+            Assert.Equal(nugetPackageResult.First().Target, targets.First());
+        }
+
+        [Fact]
+        public void ComputeAssembliesToRemove_PackageFound()
+        {
+            var userAsm1 = new AssemblyInfo() { AssemblyIdentity = "userAsm1, Version=1.0.0.0", FileVersion = "1.0.0.0", SkipBinaryIfPackageExists = true };
+
+            var packageFinder = Substitute.For<IPackageFinder>();
+            var targets = new List<FrameworkName>()
+            {
+                new FrameworkName("Windows Phone, version=8.1"),
+                new FrameworkName(".NET Standard,Version=v1.6")
+            };
+
+            var packageId = new List<NuGetPackageId>() { new NuGetPackageId("","","") };
+
+            var engine = new AnalysisEngine(Substitute.For<IApiCatalogLookup>(), Substitute.For<IApiRecommendations>(), packageFinder);
+
+            var nugetPackageResult = new List<NuGetPackageInfo>() {
+                new NuGetPackageInfo(userAsm1.AssemblyIdentity, targets[0], packageId),
+                new NuGetPackageInfo(userAsm1.AssemblyIdentity, targets[1], packageId)
+            };
+
+            var assemblies = engine.ComputeAssembliesToRemove(new[] { userAsm1 }, targets, nugetPackageResult);
+
+            Assert.True(assemblies.Any());
+            Assert.Equal(assemblies.First(), userAsm1.AssemblyIdentity);
+        }
+
+        [Fact]
+        public void ComputeAssembliesToRemove_PackageNotFound()
+        {
+            var userAsm1 = new AssemblyInfo() { AssemblyIdentity = "userAsm1, Version=1.0.0.0", FileVersion = "1.0.0.0", SkipBinaryIfPackageExists = true };
+
+            var packageFinder = Substitute.For<IPackageFinder>();
+            var targets = new List<FrameworkName>()
+            {
+                new FrameworkName("Windows Phone, version=8.1"),
+                new FrameworkName(".NET Standard,Version=v1.6")
+            };
+
+            var packageId = new List<NuGetPackageId>() { new NuGetPackageId("", "", "") };
+
+            var engine = new AnalysisEngine(Substitute.For<IApiCatalogLookup>(), Substitute.For<IApiRecommendations>(), packageFinder);
+
+            var nugetPackageResult = new List<NuGetPackageInfo>() {
+                new NuGetPackageInfo(userAsm1.AssemblyIdentity, targets[0], packageId),
+            };
+
+            var assemblies = engine.ComputeAssembliesToRemove(new[] { userAsm1 }, targets, nugetPackageResult);
+
+            Assert.False(assemblies.Any());
+        }
+
+        [Fact]
+        public void ComputeAssembliesToRemove_FlagNotSet()
+        {
+            var userAsm1 = new AssemblyInfo() { AssemblyIdentity = "userAsm1, Version=1.0.0.0", FileVersion = "1.0.0.0"};
+
+            var packageFinder = Substitute.For<IPackageFinder>();
+            var targets = new List<FrameworkName>() { new FrameworkName("Windows Phone, version=8.1") };
+
+            var packageIdAsm1 = new List<NuGetPackageId>() { new NuGetPackageId() };
+
+            var engine = new AnalysisEngine(Substitute.For<IApiCatalogLookup>(), Substitute.For<IApiRecommendations>(), packageFinder);
+
+            var nugetPackageResult = new List<NuGetPackageInfo>() { new NuGetPackageInfo(userAsm1.AssemblyIdentity, targets.First(), packageIdAsm1) };
+
+            var assemblies = engine.ComputeAssembliesToRemove(new[] { userAsm1 }, targets, nugetPackageResult);
+
+            Assert.False(assemblies.Any());
+        }
+
+        [Fact]
+        public void FilterDependencies()
+        {
+            var testData = new Dictionary<MemberInfo, ICollection<AssemblyInfo>>();
+
+            var userAsm1 = new AssemblyInfo() { AssemblyIdentity = "userAsm1, Version=1.0.0.0", FileVersion = "1.0.0.0", SkipBinaryIfPackageExists = true };
+            var userAsm2 = new AssemblyInfo() { AssemblyIdentity = "userAsm2, Version=2.0.0.0", FileVersion = "2.0.0.0", SkipBinaryIfPackageExists = true };
+            var userAsm3 = new AssemblyInfo() { AssemblyIdentity = "userAsm3, Version=3.0.0.0", FileVersion = "3.0.0.0" };
+            var mi0 = new MemberInfo() { DefinedInAssemblyIdentity = "System.Drawing, Version=1.0.136.0, PublicKeyToken=b03f5f7f11d50a3a", MemberDocId = "T:System.Drawing.Color" };
+            var mi1 = new MemberInfo() { DefinedInAssemblyIdentity = "System.Drawing, Version=1.0.136.0, PublicKeyToken=b03f5f7f11d50a3a", MemberDocId = "T:System.Drawing.Brush" };
+            var mi2 = new MemberInfo() { DefinedInAssemblyIdentity = "System.Data, Version=1.0.136.0, PublicKeyToken=b77a5c561934e089", MemberDocId = "T:System.Data.SqlTypes.SqlBoolean" };
+
+            testData.Add(mi0, new List<AssemblyInfo>() { userAsm1 });
+            var usedIn1 = new HashSet<AssemblyInfo>() { userAsm1, userAsm2 };
+            testData.Add(mi1, usedIn1);
+
+            var usedIn2 = new HashSet<AssemblyInfo>() { userAsm2, userAsm3 };
+            testData.Add(mi2, usedIn2);
+
+            var targets = new List<FrameworkName>() { new FrameworkName("Windows Phone, version=8.1") };
+
+            var engine = new AnalysisEngine(Substitute.For<IApiCatalogLookup>(), Substitute.For<IApiRecommendations>(), Substitute.For<IPackageFinder>());
+
+            var assembliesToRemove = new List<string>() { userAsm1.AssemblyIdentity, userAsm2.AssemblyIdentity};
+            var result = engine.FilterDependencies(testData, assembliesToRemove);
+
+            Assert.False(result.ContainsKey(mi0));
+            Assert.False(result.ContainsKey(mi1));
+            Assert.True(result.ContainsKey(mi2));
+
+            var mi2_usedIn = result[mi2];
+            Assert.True(mi2_usedIn.Contains(userAsm3) && !mi2_usedIn.Contains(userAsm2));
         }
 
         private static void TestBreakingChangeWithoutFixedEntry(Version version, bool noBreakingChangesExpected)
@@ -421,7 +555,7 @@ namespace Microsoft.Fx.Portability.Web.Analyze.Tests
         {
             var catalog = Substitute.For<IApiCatalogLookup>();
             var testData = GenerateTestData(catalog);
-            var engine = new AnalysisEngine(catalog, recommendations);
+            var engine = new AnalysisEngine(catalog, recommendations, null);
 
             // Value from AnalysisEngine.FullFrameworkIdentifier
             var framework = new FrameworkName(".NET Framework" + ",Version=" + version);

@@ -6,6 +6,7 @@ using Microsoft.Fx.Portability;
 using Microsoft.Fx.Portability.ObjectModel;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -71,7 +72,7 @@ namespace ApiPort.CommandLine
                 ".ildll"
             };
 
-            private readonly ICollection<IAssemblyFile> _inputAssemblies = new SortedSet<IAssemblyFile>(new AssemblyFileComparer());
+            private readonly IDictionary<IAssemblyFile, bool> _inputAssemblies = new SortedDictionary<IAssemblyFile, bool>(new AssemblyFileComparer());
 
             // Case insensitive so that if this is run on a case-sensitive file system, we don't override anything 
             private readonly ICollection<string> _invalidInputFiles = new SortedSet<string>(StringComparer.Ordinal);
@@ -98,11 +99,11 @@ namespace ApiPort.CommandLine
                 UpdateInputAssemblies(options);
             }
 
-            public override IEnumerable<IAssemblyFile> InputAssemblies
+            public override ImmutableDictionary<IAssemblyFile, bool> InputAssemblies
             {
                 get
                 {
-                    return _inputAssemblies;
+                    return _inputAssemblies.ToImmutableDictionary();
                 }
 
                 set
@@ -160,13 +161,15 @@ namespace ApiPort.CommandLine
             /// This will search the input given and find all paths 
             /// </summary> 
             /// <param name="path">A file and directory path</param> 
-            private void UpdateInputAssemblies(string path)
+            /// <param name="skipBinaryIfPackageExists">a flag to skip skip the analysis of that binary if a NuGet package already exists</param> 
+            private void UpdateInputAssemblies(string path, bool skipBinaryIfPackageExists = false)
             {
                 if (Directory.Exists(path))
                 {
                     foreach (var file in Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories))
                     {
-                        UpdateInputAssemblies(file);
+                        //If the user passes in a whole directory, set a flag to skip the analysis of that binary if a NuGet package already exists
+                        UpdateInputAssemblies(file, true);
                     }
                 }
                 else if (File.Exists(path))
@@ -175,7 +178,19 @@ namespace ApiPort.CommandLine
                     // assemblies to analyze since others are not valid assemblies 
                     if (HasValidPEExtension(path))
                     {
-                        _inputAssemblies.Add(new FilePathAssemblyFile(path));
+                        var filePath = new FilePathAssemblyFile(path);
+                        if (_inputAssemblies.TryGetValue(filePath, out var skip))
+                        {
+                            //if there are duplicate file paths with different skip flags, set skip flag to false
+                            if (skip && !skipBinaryIfPackageExists)
+                            {
+                                _inputAssemblies[filePath] = false;
+                            }
+                        }
+                        else
+                        {
+                            _inputAssemblies.Add(filePath, skipBinaryIfPackageExists);
+                        }
                     }
                 }
                 else

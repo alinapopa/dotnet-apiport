@@ -45,7 +45,7 @@ namespace Microsoft.Fx.Portability.Cci.Tests
 
         private static void CompareFinders(IDependencyFinder finder1, IDependencyFinder finder2, IEnumerable<string> paths)
         {
-            var fi = paths.Select(p => new KeyValuePair<IAssemblyFile, bool>(new TestAssemblyFile(p), false)).ToImmutableDictionary();
+            var fi = paths.Select(p => new TestAssemblyFile(p));
             var progressReporter = Substitute.For<IProgressReporter>();
             var dependencies1 = finder1.FindDependencies(fi, progressReporter);
             var dependencies2 = finder2.FindDependencies(fi, progressReporter);

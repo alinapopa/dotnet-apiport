@@ -72,9 +72,8 @@ namespace Microsoft.Fx.Portability.Tests
 
             var dependencyFinder = Substitute.For<IDependencyFinder>();
 
-            dependencyFinder.FindDependencies(Arg.Any<ImmutableDictionary<IAssemblyFile, bool>>(), Arg.Any<IProgressReporter>()).Returns(r =>
+            dependencyFinder.FindDependencies(Arg.Any<IEnumerable<IAssemblyFile>>(), Arg.Any<IProgressReporter>()).Returns(r =>
             {
-                var list = r.Arg<ImmutableDictionary<IAssemblyFile, bool>>();
                 var shared = r.Arg<IProgressReporter>();
 
                 var dependencies = Substitute.For<IDependencyInfo>();

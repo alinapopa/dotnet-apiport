@@ -20,7 +20,7 @@ namespace Microsoft.Fx.Portability.Cci.Tests
             var path = new TestAssemblyFile(TestAssembly.EmptyProject);
             var progressReporter = Substitute.For<IProgressReporter>();
 
-            var dependencies = cci.FindDependencies(ImmutableDictionary<IAssemblyFile, bool>.Empty.Add(path, false), progressReporter);
+            var dependencies = cci.FindDependencies(new[] { path }, progressReporter);
 
             var foundDocIds = dependencies.Dependencies
                 .Select(o => Tuple.Create(o.Key.MemberDocId, o.Value.Count))

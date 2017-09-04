@@ -8,6 +8,6 @@ namespace Microsoft.Fx.Portability.Analyzer
 {
     public interface IDependencyFinder
     {
-        IDependencyInfo FindDependencies(ImmutableDictionary<IAssemblyFile, bool> files, IProgressReporter progressReport);
+        IDependencyInfo FindDependencies(IEnumerable<IAssemblyFile> files, IProgressReporter progressReport);
     }
 }

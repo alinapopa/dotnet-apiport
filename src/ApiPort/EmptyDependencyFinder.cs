@@ -13,7 +13,7 @@ namespace ApiPort
 {
     internal class EmptyDependendencyFinder : IDependencyFinder
     {
-        public IDependencyInfo FindDependencies(ImmutableDictionary<IAssemblyFile, bool> inputAssemblyPaths, IProgressReporter progressReport)
+        public IDependencyInfo FindDependencies(IEnumerable<IAssemblyFile> inputAssemblyPaths, IProgressReporter progressReport)
         {
             return new EmptyDependencyInfo();
         }

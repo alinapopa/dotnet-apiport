@@ -3,6 +3,7 @@
 
 using Microsoft.Fx.Portability.Resources;
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
@@ -11,9 +12,9 @@ namespace Microsoft.Fx.Portability.Analyzer
 {
     public class CciDependencyFinder : IDependencyFinder
     {
-        public IDependencyInfo FindDependencies(ImmutableDictionary<IAssemblyFile, bool> inputAssemblies, IProgressReporter _progressReport)
+        public IDependencyInfo FindDependencies(IEnumerable<IAssemblyFile> inputAssemblies, IProgressReporter _progressReport)
         {
-            var inputAssemblyPaths = inputAssemblies.Keys.Where(f => FilterValidFiles(f, _progressReport)).Select(i => i.Name).ToList();
+            var inputAssemblyPaths = inputAssemblies.Where(f => FilterValidFiles(f, _progressReport)).Select(i => i.Name).ToList();
 
             using (var task = _progressReport.StartTask(LocalizedStrings.DetectingAssemblyReferences, inputAssemblyPaths.Count))
             {

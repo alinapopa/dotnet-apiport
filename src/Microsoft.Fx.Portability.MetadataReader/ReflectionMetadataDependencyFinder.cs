@@ -20,7 +20,7 @@ namespace Microsoft.Fx.Portability.Analyzer
             _assemblyFilter = assemblyFilter ?? throw new ArgumentNullException(nameof(assemblyFilter));
         }
 
-        public IDependencyInfo FindDependencies(ImmutableDictionary<IAssemblyFile, bool> files, IProgressReporter _progressReporter)
+        public IDependencyInfo FindDependencies(IEnumerable<IAssemblyFile> files, IProgressReporter _progressReporter)
         {
             using (var task = _progressReporter.StartTask(LocalizedStrings.DetectingAssemblyReferences))
             {

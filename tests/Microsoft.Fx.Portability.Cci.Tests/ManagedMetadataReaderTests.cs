@@ -1,11 +1,10 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
 using Microsoft.Fx.Portability.Analyzer;
 using NSubstitute;
+using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace Microsoft.Fx.Portability.Cci.Tests

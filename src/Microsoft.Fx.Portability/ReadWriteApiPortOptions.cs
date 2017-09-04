@@ -4,7 +4,6 @@
 using Microsoft.Fx.Portability.ObjectModel;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.IO;
 
 namespace Microsoft.Fx.Portability
 {

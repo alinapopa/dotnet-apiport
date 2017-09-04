@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using Microsoft.Cci.Extensions;
+using Microsoft.Fx.Portability.ObjectModel;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using Microsoft.Cci.Extensions;
-using Microsoft.Fx.Portability.ObjectModel;
 
 namespace Microsoft.Fx.Portability.Analyzer
 {

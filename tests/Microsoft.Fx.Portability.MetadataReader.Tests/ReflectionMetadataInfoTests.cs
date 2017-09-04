@@ -4,8 +4,6 @@
 using Microsoft.Fx.Portability.Analyzer;
 using NSubstitute;
 using System;
-using System.Collections.Immutable;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;

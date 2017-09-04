@@ -46,7 +46,7 @@ namespace Microsoft.Fx.Portability.ObjectModel
             }
         }
 
-        public bool SkipBinaryIfPackageExists { get; set; }
+        public bool IsExplicitlySpecified { get; set; }
 
         public override bool Equals(object obj)
         {

@@ -240,11 +240,14 @@ namespace Microsoft.Fx.Portability.Analysis
         }
 
         // Get assemblies that should be removed (nuget packages exist for all targets)
-        public IEnumerable<string> ComputeAssembliesToRemove(IEnumerable<AssemblyInfo> userAssemblies, IEnumerable<FrameworkName> targets, IEnumerable<NuGetPackageInfo> nugetPackagesForUserAssemblies)
+        public IEnumerable<string> ComputeAssembliesToRemove(
+            IEnumerable<AssemblyInfo> userAssemblies,
+            IEnumerable<FrameworkName> targets,
+            IEnumerable<NuGetPackageInfo> nugetPackagesForUserAssemblies)
         {
             foreach (var assembly in userAssemblies)
             {
-                if (assembly == default(AssemblyInfo) || !assembly.SkipBinaryIfPackageExists)
+                if (assembly == default(AssemblyInfo) || !assembly.IsExplicitlySpecified)
                 {
                     continue;
                 }

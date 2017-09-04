@@ -396,7 +396,7 @@ namespace Microsoft.Fx.Portability.Web.Analyze.Tests
         [Fact]
         public void TestGetNugetPackageInfo()
         {
-            var userAsm1 = new AssemblyInfo() { AssemblyIdentity = "userAsm1, Version=1.0.0.0", FileVersion = "1.0.0.0", SkipBinaryIfPackageExists = true };
+            var userAsm1 = new AssemblyInfo() { AssemblyIdentity = "userAsm1, Version=1.0.0.0", FileVersion = "1.0.0.0", IsExplicitlySpecified = true };
 
 
             var packageFinder = Substitute.For<IPackageFinder>();
@@ -424,7 +424,7 @@ namespace Microsoft.Fx.Portability.Web.Analyze.Tests
         [Fact]
         public void ComputeAssembliesToRemove_PackageFound()
         {
-            var userAsm1 = new AssemblyInfo() { AssemblyIdentity = "userAsm1, Version=1.0.0.0", FileVersion = "1.0.0.0", SkipBinaryIfPackageExists = true };
+            var userAsm1 = new AssemblyInfo() { AssemblyIdentity = "userAsm1, Version=1.0.0.0", FileVersion = "1.0.0.0", IsExplicitlySpecified = true };
 
             var packageFinder = Substitute.For<IPackageFinder>();
             var targets = new List<FrameworkName>()
@@ -451,7 +451,7 @@ namespace Microsoft.Fx.Portability.Web.Analyze.Tests
         [Fact]
         public void ComputeAssembliesToRemove_PackageNotFound()
         {
-            var userAsm1 = new AssemblyInfo() { AssemblyIdentity = "userAsm1, Version=1.0.0.0", FileVersion = "1.0.0.0", SkipBinaryIfPackageExists = true };
+            var userAsm1 = new AssemblyInfo() { AssemblyIdentity = "userAsm1, Version=1.0.0.0", FileVersion = "1.0.0.0", IsExplicitlySpecified = true };
 
             var packageFinder = Substitute.For<IPackageFinder>();
             var targets = new List<FrameworkName>()
@@ -497,8 +497,8 @@ namespace Microsoft.Fx.Portability.Web.Analyze.Tests
         {
             var testData = new Dictionary<MemberInfo, ICollection<AssemblyInfo>>();
 
-            var userAsm1 = new AssemblyInfo() { AssemblyIdentity = "userAsm1, Version=1.0.0.0", FileVersion = "1.0.0.0", SkipBinaryIfPackageExists = true };
-            var userAsm2 = new AssemblyInfo() { AssemblyIdentity = "userAsm2, Version=2.0.0.0", FileVersion = "2.0.0.0", SkipBinaryIfPackageExists = true };
+            var userAsm1 = new AssemblyInfo() { AssemblyIdentity = "userAsm1, Version=1.0.0.0", FileVersion = "1.0.0.0", IsExplicitlySpecified = true };
+            var userAsm2 = new AssemblyInfo() { AssemblyIdentity = "userAsm2, Version=2.0.0.0", FileVersion = "2.0.0.0", IsExplicitlySpecified = true };
             var userAsm3 = new AssemblyInfo() { AssemblyIdentity = "userAsm3, Version=3.0.0.0", FileVersion = "3.0.0.0" };
             var mi0 = new MemberInfo() { DefinedInAssemblyIdentity = "System.Drawing, Version=1.0.136.0, PublicKeyToken=b03f5f7f11d50a3a", MemberDocId = "T:System.Drawing.Color" };
             var mi1 = new MemberInfo() { DefinedInAssemblyIdentity = "System.Drawing, Version=1.0.136.0, PublicKeyToken=b03f5f7f11d50a3a", MemberDocId = "T:System.Drawing.Brush" };

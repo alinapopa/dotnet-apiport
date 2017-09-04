@@ -121,10 +121,14 @@ namespace Microsoft.Fx.Portability.Analyzer
 
                 // Extract the fileversion and assembly version from the assembly.
                 FileVersionInfo fileInfo = FileVersionInfo.GetVersionInfo(assemblyLocation);
-                AssemblyInfo assemblyInfo = new AssemblyInfo();
-                assemblyInfo.AssemblyIdentity = cciAssembly.AssemblyIdentity.Format();
-                assemblyInfo.FileVersion = fileInfo.FileVersion ?? string.Empty;
-                assemblyInfo.TargetFrameworkMoniker = cciAssembly.GetTargetFrameworkMoniker();
+
+                var assemblyInfo = new AssemblyInfo
+                {
+                    Location = cciAssembly.Location,
+                    AssemblyIdentity = cciAssembly.AssemblyIdentity.Format(),
+                    FileVersion = fileInfo.FileVersion ?? string.Empty,
+                    TargetFrameworkMoniker = cciAssembly.GetTargetFrameworkMoniker()
+                };
 
                 // remember this assembly as a user assembly.
                 _userAssemblies.Add(assemblyInfo);

@@ -14,24 +14,22 @@ namespace Microsoft.Fx.Portability.Analyzer
     {
         private readonly IDependencyFilter _assemblyFilter;
         private readonly MetadataReader _reader;
-        private readonly string _assemblyLocation;
 
         private readonly AssemblyReferenceInformation _currentAssemblyInfo;
         private readonly string _currentAssemblyName;
 
-        public DependencyFinderEngineHelper(IDependencyFilter assemblyFilter, MetadataReader metadataReader, IAssemblyFile file, bool skipAssemblyIfPackageFound)
+        public DependencyFinderEngineHelper(IDependencyFilter assemblyFilter, MetadataReader metadataReader, IAssemblyFile file)
         {
             _assemblyFilter = assemblyFilter;
             _reader = metadataReader;
-            _assemblyLocation = file.Name;
 
             MemberDependency = new List<MemberDependency>();
             CallingAssembly = new AssemblyInfo
             {
+                Location = file.Name,
                 AssemblyIdentity = metadataReader.FormatAssemblyInfo().ToString(),
                 FileVersion = file.Version ?? string.Empty,
-                TargetFrameworkMoniker = metadataReader.GetTargetFrameworkMoniker() ?? string.Empty,
-                SkipBinaryIfPackageExists = skipAssemblyIfPackageFound
+                TargetFrameworkMoniker = metadataReader.GetTargetFrameworkMoniker() ?? string.Empty
             };
 
             // Get assembly info

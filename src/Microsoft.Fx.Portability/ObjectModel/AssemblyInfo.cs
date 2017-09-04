@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Microsoft.Fx.Portability.Resources;
+using Newtonsoft.Json;
 using System;
 using System.Globalization;
 
@@ -25,6 +26,13 @@ namespace Microsoft.Fx.Portability.ObjectModel
                 _hashComputed = false;
             }
         }
+
+        /// <summary>
+        /// Assembly location
+        /// </summary>
+        /// <remarks>Do not serialize location and send it to service.</remarks>
+        [JsonIgnore]
+        public string Location { get; set; }
 
         public string FileVersion
         {

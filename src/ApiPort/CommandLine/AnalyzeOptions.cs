@@ -168,7 +168,7 @@ namespace ApiPort.CommandLine
                 {
                     foreach (var file in Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories))
                     {
-                        //If the user passes in a whole directory, set a flag to skip the analysis of that binary if a NuGet package already exists
+                        // If the user passes in a whole directory, set a flag to skip the analysis of that binary if a NuGet package already exists
                         UpdateInputAssemblies(file, true);
                     }
                 }
@@ -181,7 +181,7 @@ namespace ApiPort.CommandLine
                         var filePath = new FilePathAssemblyFile(path);
                         if (_inputAssemblies.TryGetValue(filePath, out var skip))
                         {
-                            //if there are duplicate file paths with different skip flags, set skip flag to false
+                            // If there are duplicate file paths with different skip flags, set skip flag to false
                             if (skip && !skipBinaryIfPackageExists)
                             {
                                 _inputAssemblies[filePath] = false;

@@ -232,19 +232,26 @@ namespace Microsoft.Fx.Portability.Analysis
                 {
                     foreach (var target in targets)
                     {
-                        var nuGetPackageInfo = new NuGetPackageInfo(assembly, target, packages.ContainsKey(target) ? packages[target].ToList() : Enumerable.Empty<NuGetPackageId>());
+                        var nuGetPackageInfo = new NuGetPackageInfo(assembly, target, packages.ContainsKey(target) ? packages[target] : Enumerable.Empty<NuGetPackageId>());
                         yield return nuGetPackageInfo;
                     }
                 }
             }
         }
 
-        // Get assemblies that should be removed (nuget packages exist for all targets)
-        public IEnumerable<string> ComputeAssembliesToRemove(IEnumerable<AssemblyInfo> userAssemblies, IEnumerable<FrameworkName> targets, IEnumerable<NuGetPackageInfo> nugetPackagesForUserAssemblies)
+        /// <summary>
+        /// Returns a set of assemblies that should be removed if NuGet packages
+        /// exist for all the targets
+        /// </summary>
+        public IEnumerable<string> ComputeAssembliesToRemove(
+            IEnumerable<AssemblyInfo> userAssemblies,
+            IEnumerable<FrameworkName> targets,
+            IEnumerable<NuGetPackageInfo> nugetPackagesForUserAssemblies)
         {
             foreach (var assembly in userAssemblies)
             {
-                if (assembly == default(AssemblyInfo) || !assembly.SkipBinaryIfPackageExists)
+                // If the user specified this assembly, we want to skip it.
+                if (assembly == default(AssemblyInfo) || assembly.IsExplicitlySpecified)
                 {
                     continue;
                 }
@@ -271,7 +278,7 @@ namespace Microsoft.Fx.Portability.Analysis
 
         public IDictionary<MemberInfo, ICollection<AssemblyInfo>> FilterDependencies(IDictionary<MemberInfo, ICollection<AssemblyInfo>> dependencies, IEnumerable<string> assembliesToRemove)
         {
-            //Create a new dictionary of dependencies where we remove the assemblies that should be skipped 
+            // Create a new dictionary of dependencies where we remove the assemblies that should be skipped
             var filteredDependencies = new Dictionary<MemberInfo, ICollection<AssemblyInfo>>();
             foreach (var dependency in dependencies)
             {

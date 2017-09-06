@@ -1,12 +1,11 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
 using Microsoft.Fx.Portability.Analyzer;
 using NSubstitute;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace Microsoft.Fx.Portability.Cci.Tests
@@ -20,7 +19,7 @@ namespace Microsoft.Fx.Portability.Cci.Tests
             var path = new TestAssemblyFile(TestAssembly.EmptyProject);
             var progressReporter = Substitute.For<IProgressReporter>();
 
-            var dependencies = cci.FindDependencies(ImmutableDictionary<IAssemblyFile, bool>.Empty.Add(path, false), progressReporter);
+            var dependencies = cci.FindDependencies(new[] { path }, progressReporter);
 
             var foundDocIds = dependencies.Dependencies
                 .Select(o => Tuple.Create(o.Key.MemberDocId, o.Value.Count))

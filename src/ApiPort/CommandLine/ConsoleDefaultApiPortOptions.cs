@@ -76,6 +76,13 @@ namespace ApiPort.CommandLine
             }
         }
 
+        /// <summary>
+        /// All of the input assemblies.
+        /// Key: Assembly file
+        /// Value: Boolean indicating whether the assembly was explicitly
+        ///     specified. True if the it was passed in (ie. command-line
+        ///     arguments) and false otherwise.
+        /// </summary>
         public override ImmutableDictionary<IAssemblyFile, bool> InputAssemblies
         {
             get { return base.InputAssemblies; }

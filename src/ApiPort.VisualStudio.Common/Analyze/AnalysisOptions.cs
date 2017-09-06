@@ -11,10 +11,10 @@ namespace ApiPortVS
 {
     public class AnalysisOptions : IApiPortOptions
     {
-        public AnalysisOptions(string description, IEnumerable<string> inputAssemblies, IEnumerable<string> targets, IEnumerable<string> formats, bool discardMetadata, string outputFileName, bool skipAssembliesIfPackagesAreFound)
+        public AnalysisOptions(string description, IEnumerable<string> inputAssemblies, IEnumerable<string> targets, IEnumerable<string> formats, bool discardMetadata, string outputFileName, bool isAssemblySpecified)
         {
             Description = description;
-            InputAssemblies = inputAssemblies.Select(target => new KeyValuePair<IAssemblyFile, bool>(new AssemblyFile(target), skipAssembliesIfPackagesAreFound)).ToImmutableDictionary();
+            InputAssemblies = inputAssemblies.Select(target => new KeyValuePair<IAssemblyFile, bool>(new AssemblyFile(target), isAssemblySpecified)).ToImmutableDictionary();
 
             Targets = targets.ToList();
             OutputFormats = formats.ToList();

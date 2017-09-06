@@ -95,7 +95,7 @@ namespace ApiPort.CommandLine
                 TargetMapFile = options.TargetMap;
                 BreakingChangeSuppressions = options.SuppressBreakingChange;
 
-                //Set OverwriteOutputFile to true if the output file name is explicitly specified
+                // Set OverwriteOutputFile to true if the output file name is explicitly specified
                 if(!string.IsNullOrWhiteSpace(options.Out))
                 {
                     OverwriteOutputFile = true;
@@ -192,7 +192,7 @@ namespace ApiPort.CommandLine
                         if (_inputAssemblies.TryGetValue(filePath, out var isAssemblySpecified))
                         {
                             // If the assembly already exists, and it was not
-                            // specified explicitly,in the the case where one
+                            // specified explicitly, in the the case where one
                             // value does not match the other, we default to
                             // saying that the assembly is specified.
                             _inputAssemblies[filePath] = isExplicitlySpecified || isAssemblySpecified;

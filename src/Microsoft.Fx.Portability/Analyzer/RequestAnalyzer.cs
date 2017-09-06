@@ -43,7 +43,7 @@ namespace Microsoft.Fx.Portability.Analyzer
 
             var userAssemblies = new HashSet<string>(assemblyIdentities.Where(a => !assembliesToRemove.Contains(a)), StringComparer.OrdinalIgnoreCase);
 
-            //remove the entries for which nuget packages exist
+            // remove the entries for which nuget packages exist
             var dependencies = _analysisEngine.FilterDependencies(request.Dependencies, assembliesToRemove);
 
             var notInAnyTarget = request.RequestFlags.HasFlag(AnalyzeRequestFlags.ShowNonPortableApis)

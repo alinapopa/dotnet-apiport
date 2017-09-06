@@ -278,7 +278,7 @@ namespace Microsoft.Fx.Portability.Analysis
 
         public IDictionary<MemberInfo, ICollection<AssemblyInfo>> FilterDependencies(IDictionary<MemberInfo, ICollection<AssemblyInfo>> dependencies, IEnumerable<string> assembliesToRemove)
         {
-            //Create a new dictionary of dependencies where we remove the assemblies that should be skipped 
+            // Create a new dictionary of dependencies where we remove the assemblies that should be skipped
             var filteredDependencies = new Dictionary<MemberInfo, ICollection<AssemblyInfo>>();
             foreach (var dependency in dependencies)
             {

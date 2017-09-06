@@ -232,7 +232,7 @@ namespace Microsoft.Fx.Portability.Analysis
                 {
                     foreach (var target in targets)
                     {
-                        var nuGetPackageInfo = new NuGetPackageInfo(assembly, target, packages.ContainsKey(target) ? packages[target].ToList() : Enumerable.Empty<NuGetPackageId>());
+                        var nuGetPackageInfo = new NuGetPackageInfo(assembly, target, packages.ContainsKey(target) ? packages[target] : Enumerable.Empty<NuGetPackageId>());
                         yield return nuGetPackageInfo;
                     }
                 }

@@ -165,7 +165,6 @@ namespace Microsoft.Fx.Portability.Web.Analyze.Tests
             Assert.Equal(2, notInTarget.Count);
         }
 
-
         [Fact]
         public void FindMembersNotInTargetsWithSuppliedAssembly()
         {
@@ -394,105 +393,6 @@ namespace Microsoft.Fx.Portability.Web.Analyze.Tests
         }
 
         [Fact]
-        public void TestGetNugetPackageInfo()
-        {
-            var userAsm1 = new AssemblyInfo() { AssemblyIdentity = "userAsm1, Version=1.0.0.0", FileVersion = "1.0.0.0", IsExplicitlySpecified = true };
-
-
-            var packageFinder = Substitute.For<IPackageFinder>();
-
-            var targets = new List<FrameworkName>() { new FrameworkName("Windows Phone, version=8.1") };
-            var packageIdAsm1 = new List<NuGetPackageId>() { new NuGetPackageId() };
-            var returnedpackages = ImmutableDictionary<FrameworkName, IEnumerable<NuGetPackageId>>.Empty.Add(targets[0], packageIdAsm1);
-
-
-            packageFinder.TryFindPackage(userAsm1.AssemblyIdentity, targets, out var packages).Returns(
-                x =>
-                {
-                    x[2] = returnedpackages;
-                    return true;
-                });
-
-            var engine = new AnalysisEngine(Substitute.For<IApiCatalogLookup>(), Substitute.For<IApiRecommendations>(), packageFinder);
-            var nugetPackageResult = engine.GetNuGetPackagesInfo(new[] { userAsm1.AssemblyIdentity }, targets);
-
-            Assert.NotNull(nugetPackageResult);
-            Assert.Equal(nugetPackageResult.First().AssemblyInfo, userAsm1.AssemblyIdentity);
-            Assert.Equal(nugetPackageResult.First().Target, targets.First());
-        }
-
-        [Fact]
-        public void ComputeAssembliesToRemove_PackageFound()
-        {
-            var userAsm1 = new AssemblyInfo() { AssemblyIdentity = "userAsm1, Version=1.0.0.0", FileVersion = "1.0.0.0", IsExplicitlySpecified = true };
-
-            var packageFinder = Substitute.For<IPackageFinder>();
-            var targets = new List<FrameworkName>()
-            {
-                new FrameworkName("Windows Phone, version=8.1"),
-                new FrameworkName(".NET Standard,Version=v1.6")
-            };
-
-            var packageId = new List<NuGetPackageId>() { new NuGetPackageId("","","") };
-
-            var engine = new AnalysisEngine(Substitute.For<IApiCatalogLookup>(), Substitute.For<IApiRecommendations>(), packageFinder);
-
-            var nugetPackageResult = new List<NuGetPackageInfo>() {
-                new NuGetPackageInfo(userAsm1.AssemblyIdentity, targets[0], packageId),
-                new NuGetPackageInfo(userAsm1.AssemblyIdentity, targets[1], packageId)
-            };
-
-            var assemblies = engine.ComputeAssembliesToRemove(new[] { userAsm1 }, targets, nugetPackageResult);
-
-            Assert.True(assemblies.Any());
-            Assert.Equal(assemblies.First(), userAsm1.AssemblyIdentity);
-        }
-
-        [Fact]
-        public void ComputeAssembliesToRemove_PackageNotFound()
-        {
-            var userAsm1 = new AssemblyInfo() { AssemblyIdentity = "userAsm1, Version=1.0.0.0", FileVersion = "1.0.0.0", IsExplicitlySpecified = true };
-
-            var packageFinder = Substitute.For<IPackageFinder>();
-            var targets = new List<FrameworkName>()
-            {
-                new FrameworkName("Windows Phone, version=8.1"),
-                new FrameworkName(".NET Standard,Version=v1.6")
-            };
-
-            var packageId = new List<NuGetPackageId>() { new NuGetPackageId("", "", "") };
-
-            var engine = new AnalysisEngine(Substitute.For<IApiCatalogLookup>(), Substitute.For<IApiRecommendations>(), packageFinder);
-
-            var nugetPackageResult = new List<NuGetPackageInfo>() {
-                new NuGetPackageInfo(userAsm1.AssemblyIdentity, targets[0], packageId),
-            };
-
-            var assemblies = engine.ComputeAssembliesToRemove(new[] { userAsm1 }, targets, nugetPackageResult);
-
-            Assert.False(assemblies.Any());
-        }
-
-        [Fact]
-        public void ComputeAssembliesToRemove_FlagNotSet()
-        {
-            var userAsm1 = new AssemblyInfo() { AssemblyIdentity = "userAsm1, Version=1.0.0.0", FileVersion = "1.0.0.0"};
-
-            var packageFinder = Substitute.For<IPackageFinder>();
-            var targets = new List<FrameworkName>() { new FrameworkName("Windows Phone, version=8.1") };
-
-            var packageIdAsm1 = new List<NuGetPackageId>() { new NuGetPackageId() };
-
-            var engine = new AnalysisEngine(Substitute.For<IApiCatalogLookup>(), Substitute.For<IApiRecommendations>(), packageFinder);
-
-            var nugetPackageResult = new List<NuGetPackageInfo>() { new NuGetPackageInfo(userAsm1.AssemblyIdentity, targets.First(), packageIdAsm1) };
-
-            var assemblies = engine.ComputeAssembliesToRemove(new[] { userAsm1 }, targets, nugetPackageResult);
-
-            Assert.False(assemblies.Any());
-        }
-
-        [Fact]
         public void FilterDependencies()
         {
             var testData = new Dictionary<MemberInfo, ICollection<AssemblyInfo>>();
@@ -525,7 +425,6 @@ namespace Microsoft.Fx.Portability.Web.Analyze.Tests
             var mi2_usedIn = result[mi2];
             Assert.True(mi2_usedIn.Contains(userAsm3) && !mi2_usedIn.Contains(userAsm2));
         }
-
         private static void TestBreakingChangeWithoutFixedEntry(Version version, bool noBreakingChangesExpected)
         {
             TestBreakingChange(version, GenerateTestRecommendationsWithoutFixedEntry(), noBreakingChangesExpected, null, Enumerable.Empty<string>());

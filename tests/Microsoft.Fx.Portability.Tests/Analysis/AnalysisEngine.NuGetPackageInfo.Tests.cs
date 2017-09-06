@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.Versioning;
-using System.Text;
 using Xunit;
 using static Microsoft.Fx.Portability.Tests.TestData.TestFrameworks;
 
@@ -79,75 +78,99 @@ namespace Microsoft.Fx.Portability.Tests.Analysis
             }
         }
 
+        /// <summary>
+        /// Tests that if an assembly is not explicitly specified, it'll be in the set of assemblies to remove.
+        /// </summary>
         [Fact]
         public void ComputeAssembliesToRemove_PackageFound()
         {
-            var userAsm1 = new AssemblyInfo() { AssemblyIdentity = "userAsm1, Version=1.0.0.0", FileVersion = "1.0.0.0", IsExplicitlySpecified = true };
-
-            var packageFinder = Substitute.For<IPackageFinder>();
-            var targets = new List<FrameworkName>()
+            // Arrange
+            var userNuGetPackage = GetAssemblyInfo("NugetPackageAssembly", "2.0.5.0", isExplicitlySpecified: false);
+            var inputAssemblies = new[]
             {
-                new FrameworkName("Windows Phone, version=8.1"),
-                new FrameworkName(".NET Standard,Version=v1.6")
+                GetAssemblyInfo("TestUserAssembly", "2.0.5.0", isExplicitlySpecified: true),
+                userNuGetPackage,
+                GetAssemblyInfo("TestUserLibrary", "5.0.0", isExplicitlySpecified: true),
             };
 
-            var packageId = new List<NuGetPackageId>() { new NuGetPackageId("", "", "") };
+            var targets = new[] { Windows81, NetStandard16 };
+            var packageId = new[] { GetNuGetPackage("SomeNuGetPackage", "2.0.1") };
+            var engine = new AnalysisEngine(Substitute.For<IApiCatalogLookup>(), Substitute.For<IApiRecommendations>(), Substitute.For<IPackageFinder>());
 
-            var engine = new AnalysisEngine(Substitute.For<IApiCatalogLookup>(), Substitute.For<IApiRecommendations>(), packageFinder);
-
-            var nugetPackageResult = new List<NuGetPackageInfo>() {
-                new NuGetPackageInfo(userAsm1.AssemblyIdentity, targets[0], packageId),
-                new NuGetPackageInfo(userAsm1.AssemblyIdentity, targets[1], packageId)
+            var nugetPackageResult = new[]
+            {
+                new NuGetPackageInfo(userNuGetPackage.AssemblyIdentity, Windows81, packageId),
+                new NuGetPackageInfo(userNuGetPackage.AssemblyIdentity, NetStandard16, packageId)
             };
 
-            var assemblies = engine.ComputeAssembliesToRemove(new[] { userAsm1 }, targets, nugetPackageResult);
+            // Act
+            var assemblies = engine.ComputeAssembliesToRemove(inputAssemblies, targets, nugetPackageResult);
 
-            Assert.True(assemblies.Any());
-            Assert.Equal(assemblies.First(), userAsm1.AssemblyIdentity);
+            // Assert
+            Assert.Equal(1, assemblies.Count());
+            Assert.Equal(assemblies.First(), userNuGetPackage.AssemblyIdentity);
         }
 
+        /// <summary>
+        /// Tests that if a matching NuGet package, BUT does not support all
+        /// the given targets... we shouldn't remove it.
+        /// </summary>
         [Fact]
         public void ComputeAssembliesToRemove_PackageNotFound()
         {
-            var userAsm1 = new AssemblyInfo() { AssemblyIdentity = "userAsm1, Version=1.0.0.0", FileVersion = "1.0.0.0", IsExplicitlySpecified = true };
-
-            var packageFinder = Substitute.For<IPackageFinder>();
-            var targets = new List<FrameworkName>()
+            // Arrange
+            var userNuGetPackage = GetAssemblyInfo("NugetPackageAssembly", "2.0.5.0", isExplicitlySpecified: false);
+            var inputAssemblies = new[]
             {
-                new FrameworkName("Windows Phone, version=8.1"),
-                new FrameworkName(".NET Standard,Version=v1.6")
+                GetAssemblyInfo("TestUserAssembly", "2.0.5.0", isExplicitlySpecified: true),
+                userNuGetPackage,
+                GetAssemblyInfo("TestUserLibrary", "5.0.0", isExplicitlySpecified: true),
             };
 
-            var packageId = new List<NuGetPackageId>() { new NuGetPackageId("", "", "") };
+            var targets = new[] { Windows81, NetStandard16 };
+            var packageId = new[] { GetNuGetPackage("SomeNuGetPackage", "2.0.1") };
+            var engine = new AnalysisEngine(Substitute.For<IApiCatalogLookup>(), Substitute.For<IApiRecommendations>(), Substitute.For<IPackageFinder>());
 
-            var engine = new AnalysisEngine(Substitute.For<IApiCatalogLookup>(), Substitute.For<IApiRecommendations>(), packageFinder);
-
-            var nugetPackageResult = new List<NuGetPackageInfo>() {
-                new NuGetPackageInfo(userAsm1.AssemblyIdentity, targets[0], packageId),
+            var nugetPackageResult = new[]
+            {
+                new NuGetPackageInfo(userNuGetPackage.AssemblyIdentity, Windows81, packageId),
             };
 
-            var assemblies = engine.ComputeAssembliesToRemove(new[] { userAsm1 }, targets, nugetPackageResult);
+            var assemblies = engine.ComputeAssembliesToRemove(inputAssemblies, targets, nugetPackageResult);
 
-            Assert.False(assemblies.Any());
+            Assert.Empty(assemblies);
         }
 
+        /// <summary>
+        /// Tests that for an explicitly given assembly, if a matching NuGet
+        /// package is found, AND all of its targets are supported, it is not
+        /// removed.
+        /// </summary>
         [Fact]
-        public void ComputeAssembliesToRemove_FlagNotSet()
+        public void ComputeAssembliesToRemove_AssemblyExplicitlyPassedIn()
         {
-            var userAsm1 = new AssemblyInfo() { AssemblyIdentity = "userAsm1, Version=1.0.0.0", FileVersion = "1.0.0.0" };
+            // Arrange
+            var userNuGetPackage = GetAssemblyInfo("NugetPackageAssembly", "2.0.5.0", isExplicitlySpecified: true);
+            var inputAssemblies = new[]
+            {
+                GetAssemblyInfo("TestUserAssembly", "2.0.5.0", isExplicitlySpecified: true),
+                userNuGetPackage,
+                GetAssemblyInfo("TestUserLibrary", "5.0.0", isExplicitlySpecified: true),
+            };
 
-            var packageFinder = Substitute.For<IPackageFinder>();
-            var targets = new List<FrameworkName>() { new FrameworkName("Windows Phone, version=8.1") };
+            var targets = new[] { Windows81, NetStandard16 };
+            var packageId = new[] { GetNuGetPackage("SomeNuGetPackage", "2.0.1") };
+            var engine = new AnalysisEngine(Substitute.For<IApiCatalogLookup>(), Substitute.For<IApiRecommendations>(), Substitute.For<IPackageFinder>());
 
-            var packageIdAsm1 = new List<NuGetPackageId>() { new NuGetPackageId() };
+            var nugetPackageResult = new[]
+            {
+                new NuGetPackageInfo(userNuGetPackage.AssemblyIdentity, Windows81, packageId),
+                new NuGetPackageInfo(userNuGetPackage.AssemblyIdentity, NetStandard16, packageId)
+            };
 
-            var engine = new AnalysisEngine(Substitute.For<IApiCatalogLookup>(), Substitute.For<IApiRecommendations>(), packageFinder);
+            var assemblies = engine.ComputeAssembliesToRemove(inputAssemblies, targets, nugetPackageResult);
 
-            var nugetPackageResult = new List<NuGetPackageInfo>() { new NuGetPackageInfo(userAsm1.AssemblyIdentity, targets.First(), packageIdAsm1) };
-
-            var assemblies = engine.ComputeAssembliesToRemove(new[] { userAsm1 }, targets, nugetPackageResult);
-
-            Assert.False(assemblies.Any());
+            Assert.Empty(assemblies);
         }
 
         private static AssemblyInfo GetAssemblyInfo(string assemblyName, string version, bool isExplicitlySpecified)

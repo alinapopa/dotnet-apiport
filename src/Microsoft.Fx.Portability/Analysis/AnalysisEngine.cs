@@ -239,7 +239,10 @@ namespace Microsoft.Fx.Portability.Analysis
             }
         }
 
-        // Get assemblies that should be removed (nuget packages exist for all targets)
+        /// <summary>
+        /// Returns a set of assemblies that should be removed if NuGet packages
+        /// exist for all the targets
+        /// </summary>
         public IEnumerable<string> ComputeAssembliesToRemove(
             IEnumerable<AssemblyInfo> userAssemblies,
             IEnumerable<FrameworkName> targets,
@@ -247,7 +250,8 @@ namespace Microsoft.Fx.Portability.Analysis
         {
             foreach (var assembly in userAssemblies)
             {
-                if (assembly == default(AssemblyInfo) || !assembly.IsExplicitlySpecified)
+                // If the user specified this assembly, we want to skip it.
+                if (assembly == default(AssemblyInfo) || assembly.IsExplicitlySpecified)
                 {
                     continue;
                 }

@@ -84,7 +84,7 @@ namespace Microsoft.Fx.Portability.Web.Analyze.Tests
 
             var unreferencedAssms = engine.FindUnreferencedAssemblies(s_unreferencedAssemblies, Enumerable.Empty<AssemblyInfo>()).ToList();
 
-            // 1 missing assembly since Microsoft.CSharp is a FX assembly 
+            // 1 missing assembly since Microsoft.CSharp is a FX assembly
             Assert.Equal(1, unreferencedAssms.Count);
         }
 
@@ -415,7 +415,7 @@ namespace Microsoft.Fx.Portability.Web.Analyze.Tests
 
             var engine = new AnalysisEngine(Substitute.For<IApiCatalogLookup>(), Substitute.For<IApiRecommendations>(), Substitute.For<IPackageFinder>());
 
-            var assembliesToRemove = new List<string>() { userAsm1.AssemblyIdentity, userAsm2.AssemblyIdentity};
+            var assembliesToRemove = new [] { userAsm1.AssemblyIdentity, userAsm2.AssemblyIdentity };
             var result = engine.FilterDependencies(testData, assembliesToRemove);
 
             Assert.False(result.ContainsKey(mi0));

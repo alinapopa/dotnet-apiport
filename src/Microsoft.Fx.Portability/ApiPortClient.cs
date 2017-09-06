@@ -236,7 +236,8 @@ namespace Microsoft.Fx.Portability
         /// <returns>A collection of reports</returns>
         private async Task<MultipleFormatAnalysis> GetAnalysisResultAsync(IApiPortOptions options)
         {
-            var dependencyInfo = _dependencyFinder.FindDependencies(options.InputAssemblies.Keys, _progressReport);
+            var assemblies = options.InputAssemblies?.Keys ?? Array.Empty<IAssemblyFile>();
+            var dependencyInfo = _dependencyFinder.FindDependencies(assemblies, _progressReport);
 
             if (dependencyInfo.UserAssemblies.Any())
             {
